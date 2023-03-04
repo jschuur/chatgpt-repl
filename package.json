@@ -1,0 +1,36 @@
+{
+  "name": "chatgpt-repl",
+  "version": "0.0.1",
+  "description": "CLI REPL interface to ChatGPT",
+  "main": "src/chatgpt.js",
+  "type": "module",
+  "bin": {
+    "chatgpt-repl": "src/chatgpt.js"
+  },
+  "scripts": {},
+  "author": "Joost Schuur <jschuur@jschuur.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@clack/prompts": "^0.6.1",
+    "jsonfile": "^6.1.0",
+    "update-notifier": "^6.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "chatgpt",
+    "cli",
+    "repl",
+    "chatgpt-api",
+    "openai"
+  ],
+  "homepage": "https://github.com/jschuur/chatgpt-repl#readme",
+  "bugs": {
+    "url": "https://github.com/jschuur/chatgpt-repl/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jschuur/chatgpt-repl.git"
+  }
+}
