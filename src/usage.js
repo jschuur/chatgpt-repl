@@ -1,6 +1,6 @@
 import pc from 'picocolors';
 
-import { USD_PRICE_PER_TOKEN } from './config.js';
+import { USD_PRICE_PER_TOKEN } from './settings.js';
 
 export let totalUsageTokens = 0;
 export let totalUsageCost = 0.0;
@@ -29,7 +29,7 @@ export function formatUsage(response) {
 
   return `Cost: ${pc.green(
     `$${costByTokens(total_tokens).toPrecision(1)}`
-  )} total tokens: ${pc.green(total_tokens)} prompt ${pc.green(
+  )} total tokens: ${pc.green(total_tokens)}, prompt: ${pc.green(
     prompt_tokens
-  )}, completion ${pc.green(completion_tokens)}.`;
+  )}, completion: ${pc.green(completion_tokens)}.`;
 }

@@ -6,8 +6,7 @@ import pluralize from 'pluralize';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { MAX_TOKENS } from './config.js';
-import options from './options.js';
+import { MAX_TOKENS, options } from './settings.js';
 
 import { askChatGPT } from './openai.js';
 import { formatUsage, totalUsageCost, totalUsageTokens } from './usage.js';
@@ -25,16 +24,14 @@ function showAnswer(response) {
   return answer;
 }
 
-export async function chatLoop() {
+export async function chatLoop(apiKey) {
   const s = spinner();
 
-  intro(
-    `Interact with ChatGPT (MAX_TOKENS: ${MAX_TOKENS} Ctrl-C or enter to end the conversation)...`
-  );
+  intro(`Interact with ChatGPT (MAX_TOKENS: ${MAX_TOKENS})`);
 
   while (true) {
     const question = await text({
-      message: 'Prompt?',
+      message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit)')}`,
     });
 
     if (isCancel(question) || !question || question.trim().length === 0) break;
@@ -42,7 +39,7 @@ export async function chatLoop() {
     const startTime = Date.now();
 
     s.start('Thinking...');
-    const response = await askChatGPT({ role: 'user', content: question });
+    const response = await askChatGPT({ role: 'user', content: question }, apiKey);
 
     const usage = formatUsage(response);
 
