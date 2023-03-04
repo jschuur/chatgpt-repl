@@ -8,6 +8,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+export function apiKeyCheck() {
+  if (!process.env.OPENAI_API_KEY) {
+    console.error(
+      'Set your OpenAI API key in the OPENAI_API_KEY environment variable: https://platform.openai.com/account/api-keys'
+    );
+
+    process.exit(1);
+  }
+}
+
 export async function askChatGPT(question) {
   try {
     const response = await openai.createChatCompletion({

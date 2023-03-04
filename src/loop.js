@@ -1,24 +1,28 @@
 import { intro, isCancel, outro, spinner, text } from '@clack/prompts';
 import wrap from 'fast-word-wrap';
+import clipboard from 'node-clipboardy';
 import pc from 'picocolors';
 import pluralize from 'pluralize';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
 import { MAX_TOKENS } from './config.js';
+import options from './options.js';
 
 import { askChatGPT } from './openai.js';
 import { formatUsage, totalUsageCost, totalUsageTokens } from './usage.js';
 
 function showAnswer(response) {
-  const answer = response?.data?.choices[0]?.message?.content;
+  const answer = response?.data?.choices[0]?.message?.content?.trim();
   const { columns } = terminalSize();
 
-  const answerText = answer
-    ? wrap(answer.trim(), columns - 5).trim()
-    : pc.red('No answer received.');
+  if (!answer) return pc.red('\nNo answer received.\n');
 
-  console.log(`\n${answerText}\n`);
+  const answerFormatted = options['disable-word-wrap'] ? answer : wrap(answer, columns - 5);
+
+  console.log(`\n${answerFormatted}`);
+
+  return answer;
 }
 
 export async function chatLoop() {
@@ -42,9 +46,17 @@ export async function chatLoop() {
 
     const usage = formatUsage(response);
 
-    s.stop(pc.dim(`Response in ${pc.green(prettyMilliseconds(Date.now() - startTime))}. ${usage}`));
+    s.stop(
+      pc.dim(
+        `Response${options?.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
+          prettyMilliseconds(Date.now() - startTime)
+        )}. ${usage}`
+      )
+    );
 
-    showAnswer(response);
+    const answer = showAnswer(response);
+
+    if (options?.clipboard) clipboard.writeSync(answer);
   }
 
   outro(
