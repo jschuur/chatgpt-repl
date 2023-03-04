@@ -2,14 +2,13 @@ import { intro, isCancel, outro, spinner, text } from '@clack/prompts';
 import wrap from 'fast-word-wrap';
 import clipboard from 'node-clipboardy';
 import pc from 'picocolors';
-import pluralize from 'pluralize';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
 import { MAX_TOKENS, options } from './settings.js';
 
 import { askChatGPT } from './openai.js';
-import { formatUsage, totalUsageCost, totalUsageTokens } from './usage.js';
+import { formatTotalUsage, formatUsage } from './usage.js';
 
 function showAnswer(response) {
   const answer = response?.data?.choices[0]?.message?.content?.trim();
@@ -24,7 +23,7 @@ function showAnswer(response) {
   return answer;
 }
 
-export async function chatLoop(apiKey) {
+export async function chatLoop() {
   const s = spinner();
 
   intro(`Interact with ChatGPT (MAX_TOKENS: ${MAX_TOKENS})`);
@@ -39,7 +38,7 @@ export async function chatLoop(apiKey) {
     const startTime = Date.now();
 
     s.start('Thinking...');
-    const response = await askChatGPT({ role: 'user', content: question }, apiKey);
+    const response = await askChatGPT({ role: 'user', content: question });
 
     const usage = formatUsage(response);
 
@@ -56,9 +55,8 @@ export async function chatLoop(apiKey) {
     if (options?.clipboard) clipboard.writeSync(answer);
   }
 
-  outro(
-    `Session cost: ${pc.green(`$${totalUsageCost.toPrecision(1)}`)} (${pc.green(
-      totalUsageTokens
-    )} ${pluralize('token', totalUsageTokens, false)}). See you next time! 🤖`
-  );
+  outro(`See you next time! 🤖`);
+
+  const totalUsage = formatTotalUsage();
+  console.log(totalUsage);
 }

@@ -16,6 +16,7 @@
     "dotenv": "^16.0.3",
     "fast-word-wrap": "^1.0.1",
     "jsonfile": "^6.1.0",
+    "md5": "^2.3.0",
     "minimist": "^1.2.8",
     "node-clipboardy": "^1.0.3",
     "openai": "^3.2.1",

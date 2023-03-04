@@ -1,4 +1,4 @@
-import { intro, isCancel, outro, text, confirm } from '@clack/prompts';
+import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
 import pc from 'picocolors';
 
@@ -7,7 +7,9 @@ import { addUsage } from './usage.js';
 
 let openai;
 
-function initOpenAI(apiKey) {
+export let apiKey;
+
+function initOpenAI() {
   const configuration = new Configuration({ apiKey });
 
   openai = new OpenAIApi(configuration);
@@ -34,7 +36,7 @@ async function inputApiKey() {
 }
 
 export async function apiKeyCheck() {
-  const apiKey =
+  apiKey =
     process.env.OPENAI_API_KEY ||
     options?.['api-key'] ||
     conf.get('apiKey') ||
@@ -67,8 +69,6 @@ export async function askChatGPT(question) {
       console.log('\nInvalid API key. Please restart and enter a new one.');
 
       process.exit(1);
-    }
-
-    console.error(`${pc.red('Error')}: ${error.message}`);
+    } else console.error(`${pc.red('Error')}: ${error.message}`);
   }
 }
