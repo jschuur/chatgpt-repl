@@ -2,17 +2,24 @@
   "name": "chatgpt-repl",
   "version": "0.0.1",
   "description": "CLI REPL interface to ChatGPT",
-  "main": "src/chatgpt.js",
+  "main": "src/cli.js",
   "type": "module",
   "bin": {
-    "chatgpt-repl": "src/chatgpt.js"
+    "chatgpt-repl": "src/cli.js"
   },
   "scripts": {},
   "author": "Joost Schuur <jschuur@jschuur.com>",
   "license": "ISC",
   "dependencies": {
     "@clack/prompts": "^0.6.1",
+    "dotenv": "^16.0.3",
+    "fast-word-wrap": "^1.0.1",
     "jsonfile": "^6.1.0",
+    "openai": "^3.2.1",
+    "picocolors": "^1.0.0",
+    "pluralize": "^8.0.0",
+    "pretty-ms": "^8.0.0",
+    "term-size": "^3.0.2",
     "update-notifier": "^6.0.2"
   },
   "publishConfig": {
