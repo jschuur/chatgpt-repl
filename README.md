@@ -16,9 +16,11 @@ npm install -g chatgpt-repl
 
 ## Usage
 
-Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Ask ChatGPT questions. Hit Ctrl-C or enter to exit.
+Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter to exit when sufficiently filled with knowledge.
 
-Note: OpenAI API usage is paid after a free trial, but [extremely cheap](https://openai.com/pricing). 1,000 tokens (currently) cost $0.002 for the `gpt-3.5-turbo` model used by this tool. Each word in a question and response uses at least 1 token.
+## Open AI API costs
+
+OpenAI API usage is paid after a free trial, but [extremely cheap](https://openai.com/pricing). 1,000 tokens (currently) cost $0.002 for the `gpt-3.5-turbo` model used by this tool by default. Each word in a question and response uses at least 1 token.
 
 Command line options:
 
@@ -30,5 +32,25 @@ Command line options:
 - `-x, --max-tokens <num>` Max tokens (default: 1024)
 - `-m, --model` <model> Set Model (default: gpt-3.5-turbo)
 - `-t, --temperature` <num> Temperature (default: 1)
+
+## Even ChatGPT loves this!
+
+When asked 'What are the benefits of a ChatGPT command line interface?', it wholeheartedly endorsed this tool:
+
+> There are several benefits of ChatGPT command line interface, including:
+>
+> 1.  Faster and More Efficient Communication: With command line interface, users can communicate with the ChatGPT model much faster and efficiently than with a graphical interface.
+>
+> 2.  Improved Productivity: With command line interface, users can execute multiple commands in quick succession, which can help increase productivity.
+>
+> 3.  Ease of Use: Command line interface is generally easier to use for users who are familiar with the command line interface. The syntax, while it may look complicated for beginners, is generally quicker than using a graphical interface.
+>
+> 4.  Customizability: By using a command line interface, users can customize their experience with ChatGPT based on their needs and preferences.
+>
+> 5.  Script Automation: ChatGPT command line interface can be used to create scripts that can be used to automate certain tasks, which can help save time and increase productivity.
+
+## Stack
+
+Some of the tech used: [clack](https://github.com/natemoo-re/clack/) for prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
 
 \- [Joost Schuur](https://joostschuur.com) ([@joostschuur](https://twitter.com/joostschuur))
