@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import path from 'path';
+import url from 'url';
 
 import 'dotenv/config';
 import jsonfile from 'jsonfile';
@@ -17,7 +18,7 @@ import {
   options,
 } from './settings.js';
 
-const resolvePath = (p) => path.resolve(new URL('.', import.meta.url).pathname, p);
+const resolvePath = (p) => path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), p);
 
 const packageJson = jsonfile.readFileSync(resolvePath('../package.json'));
 
