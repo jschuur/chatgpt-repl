@@ -5,7 +5,7 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { MAX_TOKENS, options } from './settings.js';
+import { openAIMaxTokens, options } from './settings.js';
 
 import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
@@ -26,7 +26,7 @@ function showAnswer(response) {
 export async function chatLoop() {
   const s = spinner();
 
-  intro(`Interact with ChatGPT (MAX_TOKENS: ${MAX_TOKENS})`);
+  intro(`Interact with ChatGPT (Max tokens: ${openAIMaxTokens})`);
 
   while (true) {
     const question = await text({

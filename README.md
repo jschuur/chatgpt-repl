@@ -22,8 +22,13 @@ Note: OpenAI API usage is paid after a free trial, but [extremely cheap](https:/
 
 Command line options:
 
-- `-c` Copy each answer to the clipboard
-- `-w` Disable automatic word wrapping
-- `-k APIKEY` Set (and save for future use) the OpenAI API key
+- `-v, --version` Show version number
+- `-h, --help` Show help
+- `-k, --api-key <key>` Set (and save) OpenAI API key
+- `-c, --clipboard` Copy responses to clipboard
+- `-w, --disable-word-wrap` Disable word wrap
+- `-x, --max-tokens <num>` Max tokens (default: 1024)
+- `-m, --model` <model> Set Model (default: gpt-3.5-turbo)
+- `-t, --temperature` <num> Temperature (default: 1)
 
 \- [Joost Schuur](https://joostschuur.com) ([@joostschuur](https://twitter.com/joostschuur))

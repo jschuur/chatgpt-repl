@@ -2,7 +2,7 @@ import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
 import pc from 'picocolors';
 
-import { conf, MAX_TOKENS, options } from './settings.js';
+import { conf, openAIMaxTokens, openAIModel, openAITemperature, options } from './settings.js';
 import { addUsage } from './usage.js';
 
 let openai;
@@ -62,10 +62,10 @@ export async function askChatGPT(question) {
 
   try {
     response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+      model: openAIModel,
       messages: conversation,
-      temperature: 0,
-      max_tokens: MAX_TOKENS,
+      temperature: openAITemperature,
+      max_tokens: openAIMaxTokens,
     });
 
     if (process.env.DEBUG) console.log(JSON.stringify(response.data, null, 2));

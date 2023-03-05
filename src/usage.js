@@ -3,13 +3,13 @@ import pc from 'picocolors';
 import pluralize from 'pluralize';
 
 import { apiKey } from './openai.js';
-import { conf, USD_PRICE_PER_TOKEN } from './settings.js';
+import { conf, openAIPricePerToken } from './settings.js';
 
 export let sessionUsageTokens = 0;
 export let sessionUsageCost = 0.0;
 
 function costByTokens(tokens) {
-  return tokens * USD_PRICE_PER_TOKEN;
+  return tokens * openAIPricePerToken;
 }
 
 export function addUsage(tokens) {
