@@ -5,7 +5,13 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { openAIMaxTokens, options } from './settings.js';
+import {
+  historyLength,
+  openAIMaxTokens,
+  openAIModel,
+  openAITemperature,
+  options,
+} from './settings.js';
 
 import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
@@ -23,10 +29,12 @@ function showAnswer(response) {
   return answer;
 }
 
+const settingsSummary = `max tokens: ${openAIMaxTokens}, history: ${historyLength}, temp: ${openAITemperature}, model: ${openAIModel}`;
+
 export async function chatLoop() {
   const s = spinner();
 
-  intro(`Interact with ChatGPT (Max tokens: ${openAIMaxTokens})`);
+  intro(`Interact with ChatGPT (${settingsSummary})`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {

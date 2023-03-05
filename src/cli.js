@@ -9,7 +9,13 @@ import updateNotifier from 'update-notifier';
 
 import { chatLoop } from './loop.js';
 import { apiKeyCheck } from './openai.js';
-import { DEFAULT_MAX_TOKENS, DEFAULT_MODEL, DEFAULT_TEMPERATURE, options } from './settings.js';
+import {
+  DEFAULT_HISTORY_LENGTH,
+  DEFAULT_MAX_TOKENS,
+  DEFAULT_MODEL,
+  DEFAULT_TEMPERATURE,
+  options,
+} from './settings.js';
 
 const resolvePath = (p) => path.resolve(new URL('.', import.meta.url).pathname, p);
 
@@ -23,12 +29,16 @@ ${pc.green('Usage:')}
 ${pc.green('Options:')}
   ${pc.dim('-v, --version')}              Show version number
   ${pc.dim('-h, --help')}                 Show help
-  ${pc.dim('-k, --api-key')}              Set (and save) OpenAI API key
+
   ${pc.dim('-c, --clipboard')}            Copy responses to clipboard
-  ${pc.dim('-w, --disable-word-wrap')}    Disable word wrap
-  ${pc.dim('-x, --max-tokens <num>')}     Max tokens (default: ${DEFAULT_MAX_TOKENS})
+  ${pc.dim('-k, --api-key')}              Set (and save) OpenAI API key
+  ${pc.dim(
+    '-l, --history-length'
+  )}       Set conversation history length (default: ${DEFAULT_HISTORY_LENGTH})
   ${pc.dim('-m, --model <model>')}        Set Model (default: ${DEFAULT_MODEL})
   ${pc.dim('-t, --temperature <num>')}    Temperature (default: ${DEFAULT_TEMPERATURE})
+  ${pc.dim('-w, --disable-word-wrap')}    Disable word wrap
+  ${pc.dim('-x, --max-tokens <num>')}     Max tokens (default: ${DEFAULT_MAX_TOKENS})
   `);
 
   process.exit(0);

@@ -22,16 +22,22 @@ Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chat
 
 OpenAI API usage is paid after a free trial, but [extremely cheap](https://openai.com/pricing). 1,000 tokens (currently) cost $0.002 for the `gpt-3.5-turbo` model used by this tool by default. Each word in a question and response uses at least 1 token.
 
+## Controlling conversation context
+
+By default, the last 3 prompts/responses in a session are sent back in a query in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases the costs by using more tokens. The `-l <num>` option can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent question/answer for context.
+
 Command line options:
 
 - `-v, --version` Show version number
 - `-h, --help` Show help
-- `-k, --api-key <key>` Set (and save) OpenAI API key
+
 - `-c, --clipboard` Copy responses to clipboard
-- `-w, --disable-word-wrap` Disable word wrap
-- `-x, --max-tokens <num>` Max tokens (default: 1024)
+- `-k, --api-key <key>` Set (and save) OpenAI API key
+- `-l, --history-length` Set conversation history length (default: 3)
 - `-m, --model` <model> Set Model (default: gpt-3.5-turbo)
 - `-t, --temperature` <num> Temperature (default: 1)
+- `-w, --disable-word-wrap` Disable word wrap
+- `-x, --max-tokens <num>` Max tokens (default: 1024)
 
 ## Even ChatGPT loves this!
 

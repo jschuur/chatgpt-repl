@@ -2,14 +2,21 @@ import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
 import pc from 'picocolors';
 
-import { conf, openAIMaxTokens, openAIModel, openAITemperature, options } from './settings.js';
+import {
+  conf,
+  historyLength,
+  openAIMaxTokens,
+  openAIModel,
+  openAITemperature,
+  options,
+} from './settings.js';
 import { addUsage } from './usage.js';
 
 let openai;
 
 export let apiKey;
 
-const conversation = [{ role: 'system', content: 'You are a helpful assistant.' }];
+let conversation = [{ role: 'system', content: 'You are a helpful assistant.' }];
 
 function initOpenAI() {
   const configuration = new Configuration({ apiKey });
@@ -51,6 +58,12 @@ export async function apiKeyCheck() {
 
 function updateConversation({ role, content }) {
   conversation.push({ role, content });
+
+  if (role === 'assistant')
+    conversation =
+      historyLength <= 0
+        ? [conversation[0]]
+        : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
 
   if (process.env.DEBUG) console.log({ conversation });
 }
