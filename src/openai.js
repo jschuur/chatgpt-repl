@@ -9,6 +9,8 @@ let openai;
 
 export let apiKey;
 
+const conversation = [{ role: 'system', content: 'You are a helpful assistant.' }];
+
 function initOpenAI() {
   const configuration = new Configuration({ apiKey });
 
@@ -47,13 +49,21 @@ export async function apiKeyCheck() {
   initOpenAI(apiKey);
 }
 
+function updateConversation({ role, content }) {
+  conversation.push({ role, content });
+
+  if (process.env.DEBUG) console.log({ conversation });
+}
+
 export async function askChatGPT(question) {
   let response;
+
+  updateConversation({ role: 'user', content: question });
 
   try {
     response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      messages: [question],
+      messages: conversation,
       temperature: 0,
       max_tokens: MAX_TOKENS,
     });
@@ -61,6 +71,9 @@ export async function askChatGPT(question) {
     if (process.env.DEBUG) console.log(JSON.stringify(response.data, null, 2));
 
     addUsage(response?.data?.usage?.total_tokens);
+
+    const answer = response?.data?.choices[0]?.message?.content;
+    if (answer) updateConversation({ role: 'assistant', content: answer });
 
     return response;
   } catch (error) {

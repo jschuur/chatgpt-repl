@@ -38,7 +38,7 @@ export async function chatLoop() {
     const startTime = Date.now();
 
     s.start('Thinking...');
-    const response = await askChatGPT({ role: 'user', content: question });
+    const response = await askChatGPT(question);
 
     const usage = formatUsage(response);
 
