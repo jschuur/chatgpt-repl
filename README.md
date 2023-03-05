@@ -1,6 +1,6 @@
 # ChatGPT REPL
 
-ChatGPT interactive command line REPL, using [their API](https://platform.openai.com/docs/guides/chat) for per usage billing.
+Simple ChatGPT interactive command line REPL, using [their API](https://platform.openai.com/docs/guides/chat) for per usage billing.
 
 <p align="center">
   <img src="https://github.com/jschuur/chatgpt-repl/blob/main/screenshot.png?raw=true" alt="Screenshot of the chatgpt-repl shell command in action, replying with a reassuring haiku to the prompt 'write a haiku about benevolent AI overlords'">
@@ -18,26 +18,32 @@ npm install -g chatgpt-repl
 
 Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter to exit when sufficiently filled with knowledge.
 
-## Open AI API costs
-
-OpenAI API usage is paid after a free trial, but [extremely cheap](https://openai.com/pricing). 1,000 tokens (currently) cost $0.002 for the `gpt-3.5-turbo` model used by this tool by default. Each word in a question and response uses at least 1 token.
-
-## Controlling conversation context
-
-By default, the last 3 prompts/responses in a session are sent back in a query in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases the costs by using more tokens. The `-l <num>` option can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent question/answer for context.
-
-Command line options:
+### Command line options:
 
 - `-v, --version` Show version number
 - `-h, --help` Show help
 
-- `-c, --clipboard` Copy responses to clipboard
+- `-c, --clipboard` Copy the latest response to the clipboard as it is shown
 - `-k, --api-key <key>` Set (and save) OpenAI API key
-- `-l, --history-length` Set conversation history length (default: 3)
-- `-m, --model` <model> Set Model (default: gpt-3.5-turbo)
-- `-t, --temperature` <num> Temperature (default: 1)
-- `-w, --disable-word-wrap` Disable word wrap
-- `-x, --max-tokens <num>` Max tokens (default: 1024)
+- `-l, --history-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_HISTORY_LENGTH` env)
+- `-m, --model` <model> Set the OpenAI [model](https://platform.openai.com/docs/models/overview) (default: gpt-3.5-turbo or `OPENAI_MODEL` env)
+- `-t, --temperature` <num> Set the [temperature](https://platform.openai.com/docs/quickstart/adjust-your-settings) for more 'random' responses (default: 1 or `OPENAI_TEMPERATURE` env)
+- `-w, --disable-word-wrap` Disable automatic word wrap in response output
+- `-x, --max-tokens <num>` Set the [max tokens](https://platform.openai.com/docs/guides/chat/managing-tokens) to use and control costs (default: 1024 or `OPENAI_MAX_TOKENS` env)
+
+Defaults can be overridden with environment variables where indicated ('env').
+
+### Open AI API costs
+
+OpenAI API usage is paid after a free trial, but [extremely cheap](https://openai.com/pricing). 1,000 tokens (currently) cost $0.002 for the `gpt-3.5-turbo` model used by this tool by default. Each word in a question and response uses at least 1 token.
+
+### Controlling conversation context
+
+By default, the last 3 prompts/responses in a session are used in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases costs by using more API tokens.
+
+The `-l <num>` option (or `OPENAI_HISTORY_LENGTH` environment variable) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
+
+Thus with a history length or zero, you couldn't ask 'What is the Sun?' and later 'How far away from the Earth is it?', since it would have no frame of reference for 'it'.
 
 ## Even ChatGPT loves this!
 
@@ -57,6 +63,6 @@ When asked 'What are the benefits of a ChatGPT command line interface?', it whol
 
 ## Stack
 
-Some of the tech used: [clack](https://github.com/natemoo-re/clack/) for prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
+Some of the libraries used: [clack](https://github.com/natemoo-re/clack/) for prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
 
 \- [Joost Schuur](https://joostschuur.com) ([@joostschuur](https://twitter.com/joostschuur))
