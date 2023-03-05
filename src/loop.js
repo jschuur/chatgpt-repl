@@ -28,6 +28,7 @@ export async function chatLoop() {
 
   intro(`Interact with ChatGPT (Max tokens: ${openAIMaxTokens})`);
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const question = await text({
       message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit)')}`,
@@ -55,7 +56,7 @@ export async function chatLoop() {
     if (options?.clipboard) clipboard.writeSync(answer);
   }
 
-  outro(`See you next time! 🤖`);
+  outro('See you next time! 🤖');
 
   const totalUsage = formatTotalUsage();
   console.log(totalUsage);

@@ -43,5 +43,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jschuur/chatgpt-repl.git"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0"
   }
 }
