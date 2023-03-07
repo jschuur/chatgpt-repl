@@ -16,6 +16,7 @@ export const options = minimist(process.argv.slice(2), {
     x: 'max-tokens',
   },
 });
+
 export const DEFAULT_MODEL = 'gpt-3.5-turbo';
 export const DEFAULT_TEMPERATURE = 1;
 export const DEFAULT_MAX_TOKENS = 1024;
@@ -44,3 +45,5 @@ export const historyLength = deriveInt(
 );
 
 export const conf = new Conf({ projectName: 'chatgpt-repl' });
+
+export const optionsSummary = `max tokens: ${openAIMaxTokens}, history: ${historyLength}, temp: ${openAITemperature}, model: ${openAIModel}`;

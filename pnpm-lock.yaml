@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@clack/prompts': ^0.6.1
+  '@clack/prompts': ^0.6.3
   conf: ^11.0.1
   dotenv: ^16.0.3
   eslint: ^8.35.0
@@ -18,7 +18,7 @@ specifiers:
   update-notifier: ^6.0.2
 
 dependencies:
-  '@clack/prompts': 0.6.1
+  '@clack/prompts': 0.6.3
   conf: 11.0.1
   dotenv: 16.0.3
   fast-word-wrap: 1.0.1
@@ -38,17 +38,17 @@ devDependencies:
 
 packages:
 
-  /@clack/core/0.3.0:
-    resolution: {integrity: sha512-ujw1888RciTArxUvwLOf24XSygRX7F4qiCPI7WLH3zCTZJuqKPMcTS7Wqjz0x/AuMpwGPlzhKln4+sCuQqYxzA==}
+  /@clack/core/0.3.2:
+    resolution: {integrity: sha512-FZnsNynwGDIDktx6PEZK1EuCkFpY4ldEX6VYvfl0dqeoLPb9Jpw1xoUXaVcGR8ExmYNm1w2vdGdJkEUYD/2pqg==}
     dependencies:
       picocolors: 1.0.0
       sisteransi: 1.0.5
     dev: false
 
-  /@clack/prompts/0.6.1:
-    resolution: {integrity: sha512-7KuMST/5zB7KpvfR00kcnbOaXmfN6tkJmkLpAyV2Iv2SJ7oxFbhNFvR5OQJynSKDhU8oOp/eFMK6Q0k/DXsq8A==}
+  /@clack/prompts/0.6.3:
+    resolution: {integrity: sha512-AM+kFmAHawpUQv2q9+mcB6jLKxXGjgu/r2EQjEwujgpCdzrST6BJqYw00GRn56/L/Izw5U7ImoLmy00X/r80Pw==}
     dependencies:
-      '@clack/core': 0.3.0
+      '@clack/core': 0.3.2
       picocolors: 1.0.0
       sisteransi: 1.0.5
     dev: false
@@ -118,6 +118,11 @@ packages:
       fastq: 1.15.0
     dev: true
 
+  /@pnpm/config.env-replace/1.0.0:
+    resolution: {integrity: sha512-ZVPVDi1E8oeXlYqkGRtX0CkzLTwE2zt62bjWaWKaAvI8NZqHzlMvGeSNDpW+JB3+aKanYb4UETJOF1/CxGPemA==}
+    engines: {node: '>=12.22.0'}
+    dev: false
+
   /@pnpm/network.ca-file/1.0.2:
     resolution: {integrity: sha512-YcPQ8a0jwYU9bTdJDpXjMi7Brhkr1mXsXrUJvjqM2mQDgkRiz8jFaQGOdaLxgjtUfQgZhKy/O3cG/YwmgKaxLA==}
     engines: {node: '>=12.22.0'}
@@ -125,10 +130,11 @@ packages:
       graceful-fs: 4.2.10
     dev: false
 
-  /@pnpm/npm-conf/1.0.5:
-    resolution: {integrity: sha512-hD8ml183638O3R6/Txrh0L8VzGOrFXgRtRDG4qQC4tONdZ5Z1M+tlUUDUvrjYdmK6G+JTBTeaCLMna11cXzi8A==}
+  /@pnpm/npm-conf/2.1.0:
+    resolution: {integrity: sha512-Oe6ntvgsMTE3hDIqy6sajqHF+MnzJrOF06qC2QSiUEybLL7cp6tjoKUa32gpd9+KPVl4QyMs3E3nsXrx/Vdnlw==}
     engines: {node: '>=12'}
     dependencies:
+      '@pnpm/config.env-replace': 1.0.0
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
     dev: false
@@ -1133,7 +1139,7 @@ packages:
     engines: {node: '>=14.16'}
     dependencies:
       got: 12.6.0
-      registry-auth-token: 5.0.1
+      registry-auth-token: 5.0.2
       registry-url: 6.0.1
       semver: 7.3.8
     dev: false
@@ -1224,11 +1230,11 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /registry-auth-token/5.0.1:
-    resolution: {integrity: sha512-UfxVOj8seK1yaIOiieV4FIP01vfBDLsY0H9sQzi9EbbUdJiuuBjJgLa1DpImXMNPnVkBD4eVxTEXcrZA6kfpJA==}
+  /registry-auth-token/5.0.2:
+    resolution: {integrity: sha512-o/3ikDxtXaA59BmZuZrJZDJv8NMDGSj+6j6XaeBmHw8eY1i1qd9+6H+LjVvQXx3HN6aRCGa1cUdJ9RaJZUugnQ==}
     engines: {node: '>=14'}
     dependencies:
-      '@pnpm/npm-conf': 1.0.5
+      '@pnpm/npm-conf': 2.1.0
     dev: false
 
   /registry-url/6.0.1:

@@ -1,6 +1,5 @@
 import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
-import pc from 'picocolors';
 
 import {
   conf,
@@ -64,37 +63,26 @@ function updateConversation({ role, content }) {
       historyLength <= 0
         ? [conversation[0]]
         : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
-
-  if (process.env.DEBUG) console.log({ conversation });
 }
 
 export async function askChatGPT(question) {
-  let response;
+  let response, params;
 
   updateConversation({ role: 'user', content: question });
 
-  try {
-    response = await openai.createChatCompletion({
-      model: openAIModel,
-      messages: conversation,
-      temperature: openAITemperature,
-      max_tokens: openAIMaxTokens,
-    });
+  params = {
+    model: openAIModel,
+    messages: conversation,
+    temperature: openAITemperature,
+    max_tokens: openAIMaxTokens,
+  };
 
-    if (process.env.DEBUG) console.log(JSON.stringify(response.data, null, 2));
+  response = await openai.createChatCompletion(params);
 
-    addUsage(response?.data?.usage?.total_tokens);
+  addUsage(response?.data?.usage?.total_tokens);
 
-    const answer = response?.data?.choices[0]?.message?.content;
-    if (answer) updateConversation({ role: 'assistant', content: answer });
+  const answer = response?.data?.choices?.[0]?.message?.content;
+  if (answer) updateConversation({ role: 'assistant', content: answer });
 
-    return response;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      conf.delete('apiKey');
-      console.log('\nInvalid API key. Please restart and enter a new one.');
-
-      process.exit(1);
-    } else console.error(`${pc.red('Error')}: ${error.message}`);
-  }
+  return response;
 }

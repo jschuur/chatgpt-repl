@@ -5,16 +5,12 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import {
-  historyLength,
-  openAIMaxTokens,
-  openAIModel,
-  openAITemperature,
-  options,
-} from './settings.js';
+import { conf, options, optionsSummary } from './settings.js';
 
+import { packageJson } from './cli.js';
 import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
+import { errorMsg } from './utils.js';
 
 function showAnswer(response) {
   const answer = response?.data?.choices[0]?.message?.content?.trim();
@@ -29,12 +25,36 @@ function showAnswer(response) {
   return answer;
 }
 
-const settingsSummary = `max tokens: ${openAIMaxTokens}, history: ${historyLength}, temp: ${openAITemperature}, model: ${openAIModel}`;
+function handleError(error, s) {
+  const { response, message } = error;
+
+  if (response) {
+    if (response?.status === 401) {
+      conf.delete('apiKey');
+      s.stop(errorMsg('Invalid API key. Please restart and enter a new one.'));
+
+      process.exit(1);
+    } else
+      s.stop(errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}`));
+  } else if (message) {
+    s.stop(errorMsg(message));
+  }
+}
+
+function responseHeader({ response, startTime }) {
+  const usage = formatUsage(response);
+
+  return pc.dim(
+    `Response${options?.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
+      prettyMilliseconds(Date.now() - startTime)
+    )}. ${usage}`
+  );
+}
 
 export async function chatLoop() {
   const s = spinner();
 
-  intro(`Interact with ChatGPT (${settingsSummary})`);
+  intro(`ChatGPT REPL v${packageJson.version} (${optionsSummary})`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -47,21 +67,16 @@ export async function chatLoop() {
     const startTime = Date.now();
 
     s.start('Thinking...');
-    const response = await askChatGPT(question);
+    try {
+      const response = await askChatGPT(question);
 
-    const usage = formatUsage(response);
+      s.stop(responseHeader({ response, startTime }));
+      const answer = showAnswer(response);
 
-    s.stop(
-      pc.dim(
-        `Response${options?.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
-          prettyMilliseconds(Date.now() - startTime)
-        )}. ${usage}`
-      )
-    );
-
-    const answer = showAnswer(response);
-
-    if (options?.clipboard) clipboard.writeSync(answer);
+      if (options?.clipboard) clipboard.writeSync(answer);
+    } catch (error) {
+      handleError(error, s);
+    }
   }
 
   outro('See you next time! 🤖');

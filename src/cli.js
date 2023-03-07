@@ -20,7 +20,7 @@ import {
 
 const resolvePath = (p) => path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), p);
 
-const packageJson = jsonfile.readFileSync(resolvePath('../package.json'));
+export const packageJson = jsonfile.readFileSync(resolvePath('../package.json'));
 
 function showHelp() {
   console.log(`ChatGPT REPL interactive command line tool, v${packageJson.version}\n
