@@ -12,8 +12,19 @@ import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
 import { errorMsg } from './utils.js';
 
+function showFinishReason(finishReason) {
+  if (finishReason === 'stop') return;
+
+  if (finishReason === 'length')
+    console.log(pc.dim('Incomplete response due to hitting max_tokens or token limit.\n'));
+  else if (finishReason === 'content_filter')
+    console.log(pc.dim('Incomplete response due to content filter\n'));
+  else console.log(pc.dim(`Unknown finish reason: ${pc.magenta(finishReason)}\n`));
+}
+
 function showAnswer(response) {
   const answer = response?.data?.choices[0]?.message?.content?.trim();
+  const finishReason = response?.data?.choices[0]?.finish_reason;
   const { columns } = terminalSize();
 
   if (!answer) return pc.red('\nNo answer received.\n');
@@ -21,6 +32,8 @@ function showAnswer(response) {
   const answerFormatted = options['disable-word-wrap'] ? answer : wrap(answer, columns - 5);
 
   console.log(`\n${answerFormatted}`);
+
+  showFinishReason(finishReason);
 
   return answer;
 }
