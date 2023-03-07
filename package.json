@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-repl",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "CLI REPL interface to ChatGPT",
   "main": "src/cli.js",
   "type": "module",
@@ -11,7 +11,7 @@
   "author": "Joost Schuur <jschuur@jschuur.com>",
   "license": "ISC",
   "dependencies": {
-    "@clack/prompts": "^0.6.1",
+    "@clack/prompts": "^0.6.3",
     "conf": "^11.0.1",
     "dotenv": "^16.0.3",
     "fast-word-wrap": "^1.0.1",
