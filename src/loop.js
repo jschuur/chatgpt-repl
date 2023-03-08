@@ -73,6 +73,7 @@ export async function chatLoop() {
   while (true) {
     const question = await text({
       message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit)')}`,
+      placeholder: '',
     });
 
     if (isCancel(question) || !question || question.trim().length === 0) break;
