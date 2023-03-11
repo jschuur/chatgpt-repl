@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@clack/prompts': ^0.6.3
+  commander: ^10.0.0
   conf: ^11.0.1
   dotenv: ^16.0.3
   eslint: ^8.35.0
@@ -19,6 +20,7 @@ specifiers:
 
 dependencies:
   '@clack/prompts': 0.6.3
+  commander: 10.0.0
   conf: 11.0.1
   dotenv: 16.0.3
   fast-word-wrap: 1.0.1
@@ -348,6 +350,11 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
+    dev: false
+
+  /commander/10.0.0:
+    resolution: {integrity: sha512-zS5PnTI22FIRM6ylNW8G4Ap0IEOyk62fhLSD0+uHRT9McRCLGpkVNvao4bjimpK/GShynyQkFFxHhwMcETmduA==}
+    engines: {node: '>=14'}
     dev: false
 
   /concat-map/0.0.1:

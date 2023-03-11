@@ -1,14 +1,7 @@
 import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
 
-import {
-  conf,
-  historyLength,
-  openAIMaxTokens,
-  openAIModel,
-  openAITemperature,
-  options,
-} from './settings.js';
+import { conf, options } from './settings.js';
 import { addUsage } from './usage.js';
 
 let openai;
@@ -44,18 +37,16 @@ async function inputApiKey() {
 }
 
 export async function apiKeyCheck() {
-  apiKey =
-    process.env.OPENAI_API_KEY ||
-    options?.['api-key'] ||
-    conf.get('apiKey') ||
-    (await inputApiKey());
+  apiKey = options.apiKey || conf.get('apiKey') || (await inputApiKey());
 
-  if (options?.['api-key']) conf.set('apiKey', apiKey);
+  if (options.apiKey && !process.env.OPENAI_API_KEY) conf.set('apiKey', apiKey);
 
   initOpenAI(apiKey);
 }
 
 function updateConversation({ role, content }) {
+  const { historyLength } = options;
+
   conversation.push({ role, content });
 
   if (role === 'assistant')
@@ -66,18 +57,18 @@ function updateConversation({ role, content }) {
 }
 
 export async function askChatGPT(question) {
-  let response, params;
+  const { model, temperature, maxTokens } = options;
 
   updateConversation({ role: 'user', content: question });
 
-  params = {
-    model: openAIModel,
+  const params = {
+    model,
     messages: conversation,
-    temperature: openAITemperature,
-    max_tokens: openAIMaxTokens,
+    temperature,
+    max_tokens: maxTokens,
   };
 
-  response = await openai.createChatCompletion(params);
+  const response = await openai.createChatCompletion(params);
 
   addUsage(response?.data?.usage?.total_tokens);
 

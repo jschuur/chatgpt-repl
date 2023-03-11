@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@clack/prompts": "^0.6.3",
+    "commander": "^10.0.0",
     "conf": "^11.0.1",
     "dotenv": "^16.0.3",
     "fast-word-wrap": "^1.0.1",

@@ -5,9 +5,8 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { conf, options, optionsSummary } from './settings.js';
+import { conf, options, optionsSummary, packageJson } from './settings.js';
 
-import { packageJson } from './cli.js';
 import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
 import { errorMsg } from './utils.js';
@@ -29,7 +28,7 @@ function showAnswer(response) {
 
   if (!answer) return pc.red('\nNo answer received.\n');
 
-  const answerFormatted = options['disable-word-wrap'] ? answer : wrap(answer, columns - 5);
+  const answerFormatted = options.disableWordWrap ? answer : wrap(answer, columns - 5);
 
   console.log(`\n${answerFormatted}`);
 
@@ -58,7 +57,7 @@ function responseHeader({ response, startTime }) {
   const usage = formatUsage(response);
 
   return pc.dim(
-    `Response${options?.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
+    `Response${options.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
       prettyMilliseconds(Date.now() - startTime)
     )}. ${usage}`
   );
@@ -67,7 +66,7 @@ function responseHeader({ response, startTime }) {
 export async function chatLoop() {
   const s = spinner();
 
-  intro(`ChatGPT REPL v${packageJson.version} (${optionsSummary})`);
+  intro(`ChatGPT REPL v${packageJson.version} (${optionsSummary(options)})`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -87,7 +86,7 @@ export async function chatLoop() {
       s.stop(responseHeader({ response, startTime }));
       const answer = showAnswer(response);
 
-      if (options?.clipboard) clipboard.writeSync(answer);
+      if (options.clipboard) clipboard.writeSync(answer);
     } catch (error) {
       handleError(error, s);
     }
