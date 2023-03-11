@@ -12,7 +12,7 @@ import { formatTotalUsage, formatUsage } from './usage.js';
 import { errorMsg } from './utils.js';
 
 function showFinishReason(finishReason) {
-  if (finishReason === 'stop') return;
+  if (!finishReason || finishReason === 'stop') return;
 
   if (finishReason === 'length')
     console.log(pc.dim('Incomplete response due to hitting max_tokens or token limit.\n'));
