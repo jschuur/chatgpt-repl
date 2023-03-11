@@ -75,6 +75,24 @@ function validateModel(model) {
   return model;
 }
 
+export function updateSetting(setting, value, type) {
+  if (typeof value !== 'string' && isNaN(value))
+    console.error(`\n${pc.red('Error')}: Value for ${setting} must be a ${type}\n`);
+  else if (value === undefined && value.length === 0)
+    console.log(`\n${pc.red('Error')}: No value provided for ${setting}\n`);
+  else {
+    settings[setting] = value;
+
+    console.log(`\n${pc.green('Update')}: ${setting} set to ${pc.magenta(value)}\n`);
+  }
+}
+
+export function resetSettings() {
+  settings = { ...initialSettings };
+
+  console.log(`\nSettings reset: ${settingsSummary()}\n`);
+}
+
 const program = new Command();
 
 program
@@ -117,7 +135,8 @@ program
       .argParser((value) => validateIntOption(value, 'Max tokens must be an integer'))
   );
 
-export const options = program.parse().opts();
+export let settings = program.parse().opts();
+const initialSettings = { ...settings };
 
-export const optionsSummary = (options) =>
-  `max tokens: ${options.maxTokens}, history: ${options.historyLength}, temp: ${options.temperature}, model: ${options.model}`;
+export const settingsSummary = () =>
+  `max tokens: ${settings.maxTokens}, history: ${settings.historyLength}, temp: ${settings.temperature}, model: ${settings.model}, system: ${settings.system}`;

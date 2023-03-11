@@ -5,8 +5,9 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { conf, options, optionsSummary, packageJson } from './settings.js';
+import { conf, packageJson, settings, settingsSummary } from './settings.js';
 
+import { runCommand } from './commands.js';
 import { askChatGPT } from './openai.js';
 import { formatTotalUsage, formatUsage } from './usage.js';
 import { errorMsg } from './utils.js';
@@ -28,7 +29,7 @@ function showAnswer(response) {
 
   if (!answer) return pc.red('\nNo answer received.\n');
 
-  const answerFormatted = options.disableWordWrap ? answer : wrap(answer, columns - 5);
+  const answerFormatted = settings.disableWordWrap ? answer : wrap(answer, columns - 5);
 
   console.log(`\n${answerFormatted}`);
 
@@ -57,7 +58,7 @@ function responseHeader({ response, startTime }) {
   const usage = formatUsage(response);
 
   return pc.dim(
-    `Response${options.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
+    `Response${settings.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
       prettyMilliseconds(Date.now() - startTime)
     )}. ${usage}`
   );
@@ -65,30 +66,42 @@ function responseHeader({ response, startTime }) {
 
 export async function chatLoop() {
   const s = spinner();
+  let initialValue = '';
 
-  intro(`ChatGPT REPL v${packageJson.version} (${optionsSummary(options)})`);
+  intro(`ChatGPT REPL v${packageJson.version} (${settingsSummary(settings)})`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const question = await text({
-      message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit)')}`,
+    let input = await text({
+      message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit or !help for commands)')}`,
       placeholder: '',
+      initialValue,
     });
+    initialValue = null;
 
-    if (isCancel(question) || !question || question.trim().length === 0) break;
+    if (isCancel(input) || !input || input.trim().length === 0) break;
 
-    const startTime = Date.now();
+    if (input.startsWith('!')) {
+      const { updatedInput, updatedInitialValue } = runCommand(input) || {};
 
-    s.start('Thinking...');
-    try {
-      const response = await askChatGPT(question);
+      input = updatedInput || null;
+      if (updatedInitialValue) initialValue = updatedInitialValue;
+    }
 
-      s.stop(responseHeader({ response, startTime }));
-      const answer = showAnswer(response);
+    if (input) {
+      const startTime = Date.now();
 
-      if (options.clipboard) clipboard.writeSync(answer);
-    } catch (error) {
-      handleError(error, s);
+      s.start('Thinking...');
+      try {
+        const response = await askChatGPT(input);
+
+        s.stop(responseHeader({ response, startTime }));
+        const answer = showAnswer(response);
+
+        if (settings.clipboard) clipboard.writeSync(answer);
+      } catch (error) {
+        handleError(error, s);
+      }
     }
   }
 

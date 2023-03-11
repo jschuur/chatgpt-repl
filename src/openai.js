@@ -2,14 +2,13 @@ import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
 import pc from 'picocolors';
 
-import { conf, options } from './settings.js';
+import { conf, settings, updateSetting } from './settings.js';
 import { addUsage } from './usage.js';
 
 let openai;
 
 export let apiKey;
-
-let conversation = [{ role: 'system', content: options.system }];
+export let conversation = [{ role: 'system', content: settings.system }];
 
 function initOpenAI(key) {
   apiKey = key;
@@ -55,31 +54,42 @@ export async function apiKeyCheck() {
   let key = conf.get('apiKey');
 
   // validate keys not previously used/saved (options override saved key)
-  if (!key || options.apiKey) {
-    key = options.apiKey || (await inputApiKey());
+  if (!key || settings.apiKey) {
+    key = settings.apiKey || (await inputApiKey());
     await validateApiKey(key);
 
-    // don't overwrite a saved key when commander set options.apiKey via.env()
+    // don't overwrite a saved key when commander set settings.apiKey via.env()
     if (!process.env.OPENAI_API_KEY) conf.set('apiKey', key);
   }
 
-  if (!apiKey) initOpenAI(key);
+  if (!openai) initOpenAI(key);
 }
 
-function updateConversation({ role, content }) {
-  const { historyLength } = options;
+export function updateConversation({ role, content }) {
+  const { historyLength } = settings;
 
-  conversation.push({ role, content });
+  if (role === 'system') {
+    conversation[0].content = content;
+    updateSetting('system', content);
+  } else {
+    conversation.push({ role, content });
 
-  if (role === 'assistant')
-    conversation =
-      historyLength <= 0
-        ? [conversation[0]]
-        : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
+    if (role === 'assistant')
+      conversation =
+        historyLength <= 0
+          ? [conversation[0]]
+          : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
+  }
+}
+
+export function clearConversation() {
+  conversation = [{ role: 'system', content: settings.system }];
+
+  console.log('\nCurrent conversation history cleared.\n');
 }
 
 export async function askChatGPT(question) {
-  const { model, temperature, maxTokens } = options;
+  const { model, temperature, maxTokens } = settings;
 
   updateConversation({ role: 'user', content: question });
 
