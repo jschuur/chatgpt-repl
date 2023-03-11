@@ -33,6 +33,7 @@ export const DEFAULT_TEMPERATURE = 1;
 export const DEFAULT_MAX_TOKENS = 1024;
 export const DEFAULT_HISTORY_LENGTH = 3;
 export const DEFAULT_TOKEN_PRICE = 0.000002;
+export const DEFAULT_SYSTEM = 'You are a helpful assistant.';
 
 export const openAIPricePerToken = process.env.OPENAI_USD_PRICE_PER_TOKEN || DEFAULT_TOKEN_PRICE;
 
@@ -103,6 +104,11 @@ program
       .default(DEFAULT_TEMPERATURE)
       .env('OPENAI_TEMPERATURE')
       .argParser((value) => validateFloatOption(value, 'Temperature must be a float'))
+  )
+  .addOption(
+    new Option('-s, --system <string>', 'Set system prompt')
+      .default(DEFAULT_SYSTEM)
+      .env('OPENAI_SYSTEM')
   )
   .option('-w, --disable-word-wrap', 'Disable word wrap')
   .addOption(

@@ -8,7 +8,7 @@ let openai;
 
 export let apiKey;
 
-let conversation = [{ role: 'system', content: 'You are a helpful assistant.' }];
+let conversation = [{ role: 'system', content: options.system }];
 
 function initOpenAI() {
   const configuration = new Configuration({ apiKey });
