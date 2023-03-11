@@ -1,5 +1,6 @@
 import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import { Configuration, OpenAIApi } from 'openai';
+import pc from 'picocolors';
 
 import { conf, options } from './settings.js';
 import { addUsage } from './usage.js';
@@ -10,7 +11,8 @@ export let apiKey;
 
 let conversation = [{ role: 'system', content: options.system }];
 
-function initOpenAI() {
+function initOpenAI(key) {
+  apiKey = key;
   const configuration = new Configuration({ apiKey });
 
   openai = new OpenAIApi(configuration);
@@ -19,29 +21,49 @@ function initOpenAI() {
 async function inputApiKey() {
   intro('No OpenAI API key found. Create one at https://platform.openai.com/account/api-keys');
 
-  const apiKey = await text({
+  const key = await text({
     message: 'Enter your API Key',
   });
 
-  if (isCancel(apiKey) || !apiKey || apiKey.trim().length === 0)
-    throw new Error('No API key provided.');
+  if (isCancel(key) || !key || key.trim().length === 0) throw new Error('No API key provided.');
 
   const saveApiKey = await confirm({
     message: 'Save API key for future use?',
   });
-  if (saveApiKey) conf.set('apiKey', apiKey);
+  if (saveApiKey) conf.set('apiKey', key);
 
   outro('API key saved.');
 
-  return apiKey;
+  return key;
+}
+
+async function validateApiKey(key) {
+  try {
+    initOpenAI(key);
+
+    await openai.listModels();
+  } catch ({ response }) {
+    if (response?.status === 401) {
+      console.error(`${pc.red('Error')}: Invalid API key. Please restart and use a different one.`);
+
+      process.exit(1);
+    }
+  }
 }
 
 export async function apiKeyCheck() {
-  apiKey = options.apiKey || conf.get('apiKey') || (await inputApiKey());
+  let key = conf.get('apiKey');
 
-  if (options.apiKey && !process.env.OPENAI_API_KEY) conf.set('apiKey', apiKey);
+  // validate keys not previously used/saved (options override saved key)
+  if (!key || options.apiKey) {
+    key = options.apiKey || (await inputApiKey());
+    await validateApiKey(key);
 
-  initOpenAI(apiKey);
+    // don't overwrite a saved key when commander set options.apiKey via.env()
+    if (!process.env.OPENAI_API_KEY) conf.set('apiKey', key);
+  }
+
+  if (!apiKey) initOpenAI(key);
 }
 
 function updateConversation({ role, content }) {
