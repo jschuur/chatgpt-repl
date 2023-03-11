@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-repl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI REPL interface to ChatGPT",
   "main": "src/cli.js",
   "type": "module",
