@@ -16,22 +16,22 @@ npm install -g chatgpt-repl
 
 ## Usage
 
-Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter to exit when sufficiently filled with knowledge.
+Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter `!exit` to end the session when sufficiently filled with knowledge.
 
-Use the up/down arrows to access previously inputted prompts or [commands](#commands).
+Use the up/down arrows to access previously entered prompts or [commands](#commands).
 
 ### Command line options:
 
 - `-v, --version` Show version number
 - `-h, --help` Show help
 
-- `-c, --clipboard` Copy the latest response to the clipboard as it is shown
+- `-c, --clipboard <boolean>` Enable/disable copying the latest response to the clipboard as it is shown
 - `-k, --api-key <key>` Set (and save) OpenAI API key
 - `-l, --history-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_HISTORY_LENGTH` env)
 - `-m, --model` <model> Set the OpenAI [model](https://platform.openai.com/docs/api-reference/chat/create#chat/create-model) (default: gpt-3.5-turbo or `OPENAI_MODEL` env)
 - `-t, --temperature` <num> Set the [temperature](https://platform.openai.com/docs/quickstart/adjust-your-settings) for more 'random' responses (default: 1 or `OPENAI_TEMPERATURE` env)
 - `-s, --system` <text> Set the [system](https://platform.openai.com/docs/guides/chat/introduction) to set the tone of the response (default: 'You are a helpful assistant' or `OPENAI_SYSTEM` env)
-- `-w, --disable-word-wrap` Disable automatic word wrap in response output
+- `-w, --word-wrap <boolean>` Enable/disable automatic word wrapping in response output
 - `-x, --max-tokens <num>` Set the [max tokens](https://platform.openai.com/docs/guides/chat/managing-tokens) to use and control costs (default: 1024 or `OPENAI_MAX_TOKENS` env)
 
 Defaults can be overridden with environment variables where indicated ('env').
@@ -52,13 +52,17 @@ Thus with a history length or zero, you couldn't ask 'What is the Sun?' and late
 
 Instead of entering a prompt, you can also use a number of commands to modify settings or perform other actions. Use `.help` for the full list:
 
-- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting
+- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting, or show it without a value
 - `.settings` shows all the current settings
 - `.reset` resets settings to when you launched the current session
 - `.retry` reruns the last prompt with the latest settings
 - `.clear` clears the [conversation history](#controlling-conversation-context)
-- `.copy` copies the last response to a prompt to your system clipboard and `.clipboard` enabled this automatically for every response.
-- `.nowordwrap` disables word wrapping for the response output (which is on by default) and `.wordwrap` re-enables it.
+- `.copy` copies the last response to a prompt to your system clipboard
+- `.clipboard` enabled/disabled clipboard copying for every response (off by default)
+- `.wordwrap` enables/disables word wrapping for the response output (on by default)
+- `.usage` shows current and total API usage
+
+Values to set boolean fields can include `true`, `false`, `1`, `0`, `on`, `off` [etc](https://www.npmjs.com/package/boolean).
 
 Hitting tab will attempt to complete a command.
 
@@ -80,6 +84,6 @@ When asked 'What are the benefits of a ChatGPT command line interface?', it whol
 
 ## Stack
 
-Some of the libraries used: [clack](https://github.com/natemoo-re/clack/) for prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
+Some of the libraries used: [clack](https://github.com/natemoo-re/clack/) for some of the prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
 
 \- [Joost Schuur](https://joostschuur.com) ([@joostschuur](https://twitter.com/joostschuur))

@@ -15,21 +15,26 @@ import { clearLine, errorMsg } from './utils.js';
 
 const promptText = pc.green('You: ');
 
-const rl = readline
-  .createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    completer: (line) => {
-      if (!line.startsWith(COMMAND_PREFIX)) return [[], line];
+let rl;
 
-      const commands = Object.keys(commandList);
-      const hits = commands.filter((c) => c.startsWith(line.slice(1)));
+function initReadline() {
+  rl = readline
+    .createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      completer: (line) => {
+        const cmd = line?.split(' ')?.[0];
+        const commands = Object.keys(commandList).map((c) => `${COMMAND_PREFIX}${c}`);
 
-      // TODO don't show list if command is complete
-      return [hits.length ? hits.map((cmd) => `${COMMAND_PREFIX}${cmd} `) : commands, line];
-    },
-  })
-  .on('close', exitCmd);
+        if (!cmd || !line.startsWith(COMMAND_PREFIX) || commands.includes(cmd)) return [[], line];
+
+        const hits = commands.filter((c) => c.startsWith(line));
+
+        return [hits.length ? hits.map((c) => `${c} `) : commands, cmd];
+      },
+    })
+    .on('close', exitCmd);
+}
 
 function showFinishReason(finishReason) {
   if (!finishReason || finishReason === 'stop') return;
@@ -48,9 +53,9 @@ function showAnswer(response) {
 
   if (!answer) return pc.red('\nNo answer received.\n');
 
-  const answerFormatted = settings.disableWordWrap
-    ? answer
-    : wrap(`${pc.cyan('ChatGPT')}: ${answer}`, columns - 5);
+  const answerFormatted = settings.wordWrap
+    ? wrap(`${pc.cyan('ChatGPT')}: ${answer}`, columns - 5)
+    : answer;
 
   console.log(`\n${answerFormatted}`);
 
@@ -65,15 +70,12 @@ function handleError(error) {
   if (response) {
     if (response?.status === 401) {
       conf.delete('apiKey');
-      console.error(errorMsg('Invalid API key. Please restart and enter a new one.'));
+      errorMsg('Invalid API key. Please restart and enter a new one.');
 
       process.exit(1);
-    } else
-      console.error(
-        errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}`)
-      );
+    } else errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}\n`);
   } else if (message) {
-    console.error(errorMsg(message));
+    errorMsg(`${message}\n`);
   }
 }
 
@@ -100,6 +102,8 @@ export async function chatLoop() {
     )}`
   );
 
+  initReadline();
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
     let input = await inputPrompt();
@@ -109,7 +113,7 @@ export async function chatLoop() {
     if (input) {
       const startTime = Date.now();
 
-      process.stdout.write('Thinking...');
+      process.stdout.write(`\n${pc.cyan('ChatGPT')}: Thinking...`);
 
       try {
         const response = await askChatGPT(input);

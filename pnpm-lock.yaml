@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@clack/prompts': ^0.6.3
+  boolean: ^3.2.0
   commander: ^10.0.0
   conf: ^11.0.1
   dotenv: ^16.0.3
@@ -17,9 +18,11 @@ specifiers:
   pretty-ms: ^8.0.0
   term-size: ^3.0.2
   update-notifier: ^6.0.2
+  wordcount: ^1.1.1
 
 dependencies:
   '@clack/prompts': 0.6.3
+  boolean: 3.2.0
   commander: 10.0.0
   conf: 11.0.1
   dotenv: 16.0.3
@@ -34,6 +37,7 @@ dependencies:
   pretty-ms: 8.0.0
   term-size: 3.0.2
   update-notifier: 6.0.2
+  wordcount: 1.1.1
 
 devDependencies:
   eslint: 8.35.0
@@ -257,6 +261,10 @@ packages:
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
+
+  /boolean/3.2.0:
+    resolution: {integrity: sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==}
+    dev: false
 
   /boxen/7.0.2:
     resolution: {integrity: sha512-1Z4UJabXUP1/R9rLpoU3O2lEMnG3pPLAs/ZD2lF3t2q7qD5lM8rqbtnvtvm4N0wEyNlE+9yZVTVAGmd1V5jabg==}
@@ -1005,6 +1013,13 @@ packages:
       yallist: 4.0.0
     dev: false
 
+  /match-words/0.1.1:
+    resolution: {integrity: sha512-cywKmeeoNFi//GGLHZ+Zb/M3ZX0VTwJjotLMWhDZoBRtSbw3kraIuIxw7P/xy+t5NSAMHNVeljM63WRBYQ563w==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      word-regex: 0.1.2
+    dev: false
+
   /md5/2.3.0:
     resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
     dependencies:
@@ -1472,10 +1487,22 @@ packages:
       string-width: 5.1.2
     dev: false
 
+  /word-regex/0.1.2:
+    resolution: {integrity: sha512-4jK/OibPeindR9o/sryObhVWNgD2LJCMJFWEME69p48sEYpE9axfyjHK+RqYcOeoEoqcqJEPE9iMdiiFpXHo0Q==}
+    engines: {node: '>=0.10.0'}
+    dev: false
+
   /word-wrap/1.2.3:
     resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /wordcount/1.1.1:
+    resolution: {integrity: sha512-3PzTv5i9Zq+DYjYFs9mybWjz3uxd19pzZEhroS0C/424IxrxWeqd+0Qt/R+UjydSWutYjaQSTklO9EBZ6YsiWg==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      match-words: 0.1.1
+    dev: false
 
   /wrap-ansi/8.1.0:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}

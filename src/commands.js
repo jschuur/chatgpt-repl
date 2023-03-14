@@ -1,41 +1,60 @@
 import clipboard from 'node-clipboardy';
 import pc from 'picocolors';
+import pluralize from 'pluralize';
+import wordcount from 'wordcount';
 
-import { clearConversation, conversation, updateConversation } from './openai.js';
-import { packageJson, resetSettings, settingsList, updateSetting } from './settings.js';
+import { apiKey, clearConversation, conversation, updateConversation } from './openai.js';
+import {
+  indentPadding,
+  packageJson,
+  resetSettings,
+  settingsSummary,
+  updateSetting,
+} from './settings.js';
 import { formatTotalUsage } from './usage.js';
 import { clearLine } from './utils.js';
 
 export const COMMAND_PREFIX = '.';
 
-const retryCmd = () => conversation[conversation.length - 2]?.content;
+function retryCmd() {
+  if (conversation.length < 3) console.warn('No previous response to retry.');
+  else return conversation[conversation.length - 2]?.content;
+}
 
 function copyLastResultCmd() {
   const lastMessage = conversation[conversation.length - 1];
+  const wordCount = wordcount(lastMessage?.content || '');
+  const characterCount = (lastMessage?.content || '').length;
 
-  if (lastMessage?.role === 'assistant') {
+  if (conversation.length < 3) console.warn('No previous response to copy.');
+  else if (lastMessage?.role === 'assistant') {
     clipboard.writeSync(lastMessage.content);
 
-    console.log('\nLast response copied to clipboard.\n');
+    console.log(
+      `Last response (${pluralize('word', wordCount, true)}, ${pluralize(
+        'character',
+        characterCount,
+        true
+      )}) copied to clipboard.`
+    );
   } else {
-    console.error('\nUnable to copy last response copied to clipboard.\n');
+    console.error(`${pc.red('Error')}: Unable to copy last response copied to clipboard.`);
   }
 }
 
 function showHelp() {
   console.log(`\n${pc.green('Available commands')}:\n`);
   for (const [command, [description]] of Object.entries(commandList)) {
-    console.log(`  ${COMMAND_PREFIX}${command.padEnd(16)} ${pc.dim(description)}`);
+    console.log(`  ${COMMAND_PREFIX}${command.padEnd(indentPadding)} ${pc.dim(description)}`);
   }
 
   console.log();
 }
 
-export function runCommand(cmd) {
-  const [command, ...args] = cmd.slice(1).split(' ');
-
-  if (!commandList[command]) console.error(`Unknown command: ${COMMAND_PREFIX}${command}`);
-  else return commandList[command][1](args.join(' '));
+function usageCmd() {
+  console.log(`\n${pc.green(`Usage for current API Key (...${pc.dim(apiKey.slice(-6))}):`)}\n`);
+  console.log(formatTotalUsage());
+  console.log();
 }
 
 export function exitCmd() {
@@ -48,30 +67,40 @@ export function exitCmd() {
   process.exit(0);
 }
 
+export function runCommand(cmd) {
+  const [command, ...args] = cmd.slice(1).split(' ');
+
+  if (!commandList[command]) console.error(`Unknown command: ${COMMAND_PREFIX}${command}`);
+  else return commandList[command][1](args.join(' '));
+}
+
 export const commandList = {
   help: ['Show help', showHelp],
   version: ['Show version', () => console.log(packageJson.version)],
-  settings: ['Show current settings', settingsList],
-  model: ['Update model', (str) => updateSetting('model', str)],
-  temperature: [
-    'Update temperature',
-    (str) => updateSetting('temperature', parseFloat(str), 'float'),
-  ],
+  settings: ['Show current settings', settingsSummary],
+  usage: ['Show usage for current API key', usageCmd],
+  model: ['Show/update model', (str) => updateSetting('model', str, 'model')],
+  temperature: ['Show/update temperature', (str) => updateSetting('temperature', str, 'float')],
   maxtokens: [
-    'Updater max tokens per prompt',
-    (str) => updateSetting('maxTokens', parseInt(str, 10)),
+    'Show/update max tokens per prompt',
+    (str) => updateSetting('maxTokens', str, 'integer'),
     'integer',
   ],
   historylength: [
-    'Update history length',
-    (str) => updateSetting('historyLength', parseInt(str, 10), 'integer'),
+    'Show/update history length',
+    (str) => updateSetting('historyLength', str, 'integer'),
   ],
-  system: ['Update system text', (str) => updateConversation({ role: 'system', content: str })],
+  system: [
+    'Show/update system text',
+    (str) => updateConversation({ role: 'system', content: str }),
+  ],
   reset: ['Reset settings', resetSettings],
   retry: ['Send previous prompt again', retryCmd],
   clear: ['Clear conversation history', clearConversation],
-  clipboard: ['Enable automatic clipboard copying', () => updateSetting('clipboard', true)],
+  clipboard: [
+    'Modify automatic clipboard copying',
+    () => updateSetting('clipboard', true, 'boolean'),
+  ],
   copy: ['Copy last result to clipboard', copyLastResultCmd],
-  wordwrap: ['Enable response word wrap', () => updateSetting('disableWordWrap', false)],
-  nowordwrap: ['Disable response word wrap', () => updateSetting('disableWordWrap', true)],
+  wordwrap: ['Modify response word wrapping', (str) => updateSetting('wordWrap', str, 'boolean')],
 };

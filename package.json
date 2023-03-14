@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@clack/prompts": "^0.6.3",
+    "boolean": "^3.2.0",
     "commander": "^10.0.0",
     "conf": "^11.0.1",
     "dotenv": "^16.0.3",
@@ -25,7 +26,8 @@
     "pluralize": "^8.0.0",
     "pretty-ms": "^8.0.0",
     "term-size": "^3.0.2",
-    "update-notifier": "^6.0.2"
+    "update-notifier": "^6.0.2",
+    "wordcount": "^1.1.1"
   },
   "publishConfig": {
     "access": "public"

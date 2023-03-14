@@ -85,7 +85,7 @@ export function updateConversation({ role, content }) {
 export function clearConversation() {
   conversation = [{ role: 'system', content: settings.system }];
 
-  console.log('\nCurrent conversation history cleared.\n');
+  console.log('Current conversation history cleared.');
 }
 
 export async function askChatGPT(question) {
