@@ -28,6 +28,8 @@ const UNSUPPORTED_MODELS = [
   'text-moderation-latest',
 ];
 
+export const INDENT_PADDING_BUFFER = 2;
+
 export const DEFAULT_MODEL = KNOWN_MODELS[0];
 export const DEFAULT_TEMPERATURE = 1;
 export const DEFAULT_MAX_TOKENS = 1024;
@@ -75,22 +77,39 @@ function validateModel(model) {
   return model;
 }
 
-export function updateSetting(setting, value, type) {
-  if (typeof value !== 'string' && isNaN(value))
-    console.error(`\n${pc.red('Error')}: Value for ${setting} must be a ${type}\n`);
-  else if (value === undefined && value.length === 0)
-    console.log(`\n${pc.red('Error')}: No value provided for ${setting}\n`);
-  else {
+export function updateSetting(setting, str, type) {
+  if (!str || str.length === 0) {
+    console.log(`${setting.padEnd(indentPadding + 3)} ${pc.dim(settings[setting])}`);
+  } else {
+    let value;
+
+    try {
+      if (type === 'integer')
+        value = validateIntOption(str, `${pc.cyan(setting)} must be an integer`);
+      else if (type === 'float')
+        value = validateFloatOption(str, `${pc.cyan(setting)} must be a float`);
+      else if (type === 'boolean') {
+        if (['true', 'false'].includes(str)) value = str === 'true';
+        else throw new Error(`${pc.cyan(setting)} must be a boolean`);
+      } else if (type === 'model') value = validateModel(str);
+      else value = str;
+    } catch (e) {
+      console.error(`${pc.red('Error')}: ${e.message}`);
+
+      return;
+    }
+
     settings[setting] = value;
 
-    console.log(`\n${pc.green('Update')}: ${setting} set to ${pc.magenta(value)}\n`);
+    console.log(`${pc.cyan(setting)} set to ${pc.magenta(value)}`);
   }
 }
 
 export function resetSettings() {
   settings = { ...initialSettings };
 
-  console.log(`\nSettings reset: ${settingsSummary()}\n`);
+  console.log(`\n${pc.green('Settings reset')}`);
+  settingsList();
 }
 
 const program = new Command();
@@ -136,6 +155,8 @@ program
   );
 
 export let settings = program.parse().opts();
+export const indentPadding =
+  Math.max(...Object.keys(settings).map((k) => k.length)) + INDENT_PADDING_BUFFER;
 const initialSettings = { ...settings };
 
 export const settingsSummary = () =>
@@ -145,7 +166,7 @@ export function settingsList() {
   console.log();
 
   for (const [key, value] of Object.entries(settings))
-    console.log(`${key.toLowerCase().padEnd(19)} ${pc.dim(value)}`);
+    console.log(`${key.toLowerCase().padEnd(indentPadding + 3)} ${pc.dim(value)}`);
 
   console.log();
 }
