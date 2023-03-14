@@ -140,3 +140,12 @@ const initialSettings = { ...settings };
 
 export const settingsSummary = () =>
   `max tokens: ${settings.maxTokens}, history: ${settings.historyLength}, temp: ${settings.temperature}, model: ${settings.model}, system: ${settings.system}`;
+
+export function settingsList() {
+  console.log();
+
+  for (const [key, value] of Object.entries(settings))
+    console.log(`${key.toLowerCase().padEnd(19)} ${pc.dim(value)}`);
+
+  console.log();
+}

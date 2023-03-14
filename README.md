@@ -18,6 +18,8 @@ npm install -g chatgpt-repl
 
 Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter to exit when sufficiently filled with knowledge.
 
+Use the up/down arrows to access previously inputted prompts or [commands](#commands).
+
 ### Command line options:
 
 - `-v, --version` Show version number
@@ -46,18 +48,19 @@ The `-l <num>` option (or `OPENAI_HISTORY_LENGTH` environment variable) can be u
 
 Thus with a history length or zero, you couldn't ask 'What is the Sun?' and later 'How far away from the Earth is it?', since it would have no frame of reference for 'it'.
 
-### Mid-conversation commands
+### Commands
 
-Instead of entering a prompt, you can also use a number of commands to modify settings or perform other actions. Use `!help` for the full list:
+Instead of entering a prompt, you can also use a number of commands to modify settings or perform other actions. Use `.help` for the full list:
 
-- `!model`, `!temperature`, `!maxtokens`, `!historylength` or `!system` followed by a value will change a setting
-- `!settings` shows all the current settings
-- `!reset` resets settings to when you launched the current session
-- `!retry` reruns the last prompt with the latest settings
-- `!edit` pre-populates the next prompt with the text you entered last time, allowing you to modify it
-- `!clear` clears the [conversation history](#controlling-conversation-context)
-- `!copy` copies the last response to a prompt to your system clipboard and `!clipboard` enabled this automatically for every response.
-- `!nowordwrap` disables word wrapping for the response output (which is on by default) and `!wordwrap` re-enables it.
+- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting
+- `.settings` shows all the current settings
+- `.reset` resets settings to when you launched the current session
+- `.retry` reruns the last prompt with the latest settings
+- `.clear` clears the [conversation history](#controlling-conversation-context)
+- `.copy` copies the last response to a prompt to your system clipboard and `.clipboard` enabled this automatically for every response.
+- `.nowordwrap` disables word wrapping for the response output (which is on by default) and `.wordwrap` re-enables it.
+
+Hitting tab will attempt to complete a command.
 
 ## Even ChatGPT loves this!
 

@@ -1,16 +1,35 @@
-import { intro, isCancel, outro, spinner, text } from '@clack/prompts';
+import readline from 'readline';
+
 import wrap from 'fast-word-wrap';
 import clipboard from 'node-clipboardy';
 import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { conf, packageJson, settings, settingsSummary } from './settings.js';
+import { conf, packageJson, settings } from './settings.js';
 
-import { runCommand } from './commands.js';
+import { commandList, COMMAND_PREFIX, exitCmd, runCommand } from './commands.js';
 import { askChatGPT } from './openai.js';
-import { formatTotalUsage, formatUsage } from './usage.js';
-import { errorMsg } from './utils.js';
+import { formatUsage } from './usage.js';
+import { clearLine, errorMsg } from './utils.js';
+
+const promptText = pc.green('You: ');
+
+const rl = readline
+  .createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    completer: (line) => {
+      if (!line.startsWith(COMMAND_PREFIX)) return [[], line];
+
+      const commands = Object.keys(commandList);
+      const hits = commands.filter((c) => c.startsWith(line.slice(1)));
+
+      // TODO don't show list if command is complete
+      return [hits.length ? hits.map((cmd) => `${COMMAND_PREFIX}${cmd} `) : commands, line];
+    },
+  })
+  .on('close', exitCmd);
 
 function showFinishReason(finishReason) {
   if (!finishReason || finishReason === 'stop') return;
@@ -29,7 +48,9 @@ function showAnswer(response) {
 
   if (!answer) return pc.red('\nNo answer received.\n');
 
-  const answerFormatted = settings.disableWordWrap ? answer : wrap(answer, columns - 5);
+  const answerFormatted = settings.disableWordWrap
+    ? answer
+    : wrap(`${pc.cyan('ChatGPT')}: ${answer}`, columns - 5);
 
   console.log(`\n${answerFormatted}`);
 
@@ -38,19 +59,21 @@ function showAnswer(response) {
   return answer;
 }
 
-function handleError(error, s) {
+function handleError(error) {
   const { response, message } = error;
 
   if (response) {
     if (response?.status === 401) {
       conf.delete('apiKey');
-      s.stop(errorMsg('Invalid API key. Please restart and enter a new one.'));
+      console.error(errorMsg('Invalid API key. Please restart and enter a new one.'));
 
       process.exit(1);
     } else
-      s.stop(errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}`));
+      console.error(
+        errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}`)
+      );
   } else if (message) {
-    s.stop(errorMsg(message));
+    console.error(errorMsg(message));
   }
 }
 
@@ -64,49 +87,41 @@ function responseHeader({ response, startTime }) {
   );
 }
 
-export async function chatLoop() {
-  const s = spinner();
-  let initialValue = '';
+async function inputPrompt() {
+  return new Promise((resolve) => {
+    rl.question(promptText, resolve);
+  });
+}
 
-  intro(`ChatGPT REPL v${packageJson.version} (${settingsSummary(settings)})`);
+export async function chatLoop() {
+  console.log(
+    `ChatGPT REPL v${packageJson.version} ${pc.dim(
+      `(Ctrl-C or ${COMMAND_PREFIX}exit to exit, ${COMMAND_PREFIX}help for more commands)\n`
+    )}`
+  );
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    let input = await text({
-      message: `Prompt? ${pc.dim('(Ctrl-C or enter to exit or !help for commands)')}`,
-      placeholder: '',
-      initialValue,
-    });
-    initialValue = null;
+    let input = await inputPrompt();
 
-    if (isCancel(input) || !input || input.trim().length === 0) break;
-
-    if (input.startsWith('!')) {
-      const { updatedInput, updatedInitialValue } = runCommand(input) || {};
-
-      input = updatedInput || null;
-      if (updatedInitialValue) initialValue = updatedInitialValue;
-    }
+    if (input.startsWith(COMMAND_PREFIX)) input = runCommand(input);
 
     if (input) {
       const startTime = Date.now();
 
-      s.start('Thinking...');
+      process.stdout.write('Thinking...');
+
       try {
         const response = await askChatGPT(input);
 
-        s.stop(responseHeader({ response, startTime }));
+        clearLine();
+        console.log(responseHeader({ response, startTime }));
         const answer = showAnswer(response);
 
         if (settings.clipboard) clipboard.writeSync(answer);
       } catch (error) {
-        handleError(error, s);
+        handleError(error);
       }
     }
   }
-
-  outro('See you next time! 🤖');
-
-  const totalUsage = formatTotalUsage();
-  console.log(totalUsage);
 }
