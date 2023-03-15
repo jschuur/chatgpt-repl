@@ -16,7 +16,7 @@ npm install -g chatgpt-repl
 
 ## Usage
 
-Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter `!exit` to end the session when sufficiently filled with knowledge.
+Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chatgpt-repl`. Provided API key when asked. Enter a ChatGPT prompt ('Should Pluto be a planet?'). Hit Ctrl-C or enter `.exit` to end the session when sufficiently filled with knowledge.
 
 Use the up/down arrows to access previously entered prompts or [commands](#commands).
 
@@ -67,6 +67,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 - `.clipboard` enabled/disabled clipboard copying for every response (off by default)
 - `.wordwrap` enables/disables word wrapping for the response output (on by default)
 - `.usage` shows current and total API usage
+- `.exit` ends the current session
 
 Values to set boolean fields can include `true`, `false`, `1`, `0`, `on`, `off` [etc](https://www.npmjs.com/package/boolean).
 

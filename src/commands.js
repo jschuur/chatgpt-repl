@@ -103,4 +103,5 @@ export const commandList = {
   ],
   copy: ['Copy last result to clipboard', copyLastResultCmd],
   wordwrap: ['Modify response word wrapping', (str) => updateSetting('wordWrap', str, 'boolean')],
+  exit: ['Exit chatgpt-repl', exitCmd],
 };
