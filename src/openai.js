@@ -69,8 +69,8 @@ export function updateConversation({ role, content }) {
   const { historyLength } = settings;
 
   if (role === 'system') {
-    conversation[0].content = content;
     updateSetting('system', content);
+    clearConversation(false);
   } else {
     conversation.push({ role, content });
 
@@ -82,10 +82,10 @@ export function updateConversation({ role, content }) {
   }
 }
 
-export function clearConversation() {
+export function clearConversation(announce = true) {
   conversation = [{ role: 'system', content: settings.system }];
 
-  console.log('Current conversation history cleared.');
+  if (announce) console.log('Current conversation history cleared.');
 }
 
 export async function askChatGPT(question) {

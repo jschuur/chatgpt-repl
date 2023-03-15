@@ -70,7 +70,10 @@ export function exitCmd() {
 export function runCommand(cmd) {
   const [command, ...args] = cmd.slice(1).split(' ');
 
-  if (!commandList[command]) console.error(`Unknown command: ${COMMAND_PREFIX}${command}`);
+  if (!commandList[command])
+    console.error(
+      `Unknown command: ${COMMAND_PREFIX}${command}. List commands with ${COMMAND_PREFIX}help.`
+    );
   else return commandList[command][1](args.join(' '));
 }
 
