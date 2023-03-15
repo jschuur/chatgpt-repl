@@ -3,6 +3,7 @@ import pc from 'picocolors';
 import pluralize from 'pluralize';
 import wordcount from 'wordcount';
 
+import { showLastResponse } from './loop.js';
 import { apiKey, clearConversation, conversation, updateConversation } from './openai.js';
 import {
   indentPadding,
@@ -106,5 +107,6 @@ export const commandList = {
   ],
   copy: ['Copy last result to clipboard', copyLastResultCmd],
   wordwrap: ['Modify response word wrapping', (str) => updateSetting('wordWrap', str, 'boolean')],
+  last: ['Show the last response again', showLastResponse],
   exit: ['Exit chatgpt-repl', exitCmd],
 };

@@ -104,8 +104,11 @@ export async function askChatGPT(question) {
 
   addUsage(response?.data?.usage?.total_tokens);
 
-  const answer = response?.data?.choices?.[0]?.message?.content;
+  const {
+    message: { content: answer },
+    finish_reason: finishReason,
+  } = response?.data?.choices?.[0] || {};
   if (answer) updateConversation({ role: 'assistant', content: answer });
 
-  return response;
+  return { answer, finishReason, response };
 }

@@ -62,6 +62,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 - `.settings` shows all the current settings
 - `.reset` resets settings to when you launched the current session
 - `.retry` reruns the last prompt with the latest settings
+- `.last` shows the last response again without running it through ChatGPT again (applies new word wrap/clipboard settings)
 - `.clear` clears the [conversation history](#controlling-conversation-context)
 - `.copy` copies the last response to a prompt to your system clipboard
 - `.clipboard` enabled/disabled clipboard copying for every response (off by default)

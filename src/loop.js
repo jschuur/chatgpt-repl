@@ -9,7 +9,7 @@ import terminalSize from 'term-size';
 import { conf, packageJson, settings } from './settings.js';
 
 import { commandList, COMMAND_PREFIX, exitCmd, runCommand } from './commands.js';
-import { askChatGPT } from './openai.js';
+import { askChatGPT, conversation } from './openai.js';
 import { formatUsage } from './usage.js';
 import { clearLine, errorMsg } from './utils.js';
 
@@ -46,12 +46,12 @@ function showFinishReason(finishReason) {
   else console.log(pc.dim(`Unknown finish reason: ${pc.magenta(finishReason)}\n`));
 }
 
-function showAnswer(response) {
-  const answer = response?.data?.choices[0]?.message?.content?.trim();
-  const finishReason = response?.data?.choices[0]?.finish_reason;
-  const { columns } = terminalSize();
+export function showLastResponse() {
+  const { role, content: answer } = conversation[conversation.length - 1] || {};
 
-  if (!answer) return pc.red('\nNo answer received.\n');
+  if (role !== 'assistant' || !answer) return errorMsg('No previous response to show.');
+
+  const { columns } = terminalSize();
 
   const answerFormatted = settings.wordWrap
     ? wrap(`${pc.cyan('ChatGPT')}: ${answer}`, columns - 5)
@@ -59,9 +59,7 @@ function showAnswer(response) {
 
   console.log(`\n${answerFormatted}`);
 
-  showFinishReason(finishReason);
-
-  return answer;
+  if (settings.clipboard) clipboard.writeSync(answer);
 }
 
 function handleError(error) {
@@ -116,13 +114,13 @@ export async function chatLoop() {
       process.stdout.write(`\n${pc.cyan('ChatGPT')}: Thinking...`);
 
       try {
-        const response = await askChatGPT(input);
+        const { answer, finishReason, response } = await askChatGPT(input);
 
         clearLine();
         console.log(responseHeader({ response, startTime }));
-        const answer = showAnswer(response);
 
-        if (settings.clipboard) clipboard.writeSync(answer);
+        if (answer) showLastResponse();
+        showFinishReason(finishReason);
       } catch (error) {
         handleError(error);
       }
