@@ -20,6 +20,12 @@ Get an [OpenAI API key](https://platform.openai.com/account/api-keys). Run `chat
 
 Use the up/down arrows to access previously entered prompts or [commands](#commands).
 
+### What about GPT-4?
+
+GPT-4 was [announced](https://openai.com/product/gpt-4) on March 14th, 2023 and API support for it started out with a waitlist. If it's available to you, it should work if you provide an [alternate model name](https://platform.openai.com/docs/models/gpt-4) via `--model gpt-4` (or `.model gpt-4`), since the chat completion API hasn't changed.
+
+Note however that GPT-4's pricing appears to be [significantly higher](https://chatgpt4.ai/gpt-4-api-pricing/) than GPT-3's. The current API usage costs shown by this tool is based on GPT-3's pricing ([for now](https://github.com/jschuur/chatgpt-repl/issues/19)).
+
 ### Command line options:
 
 - `-v, --version` Show version number
