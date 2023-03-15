@@ -102,7 +102,7 @@ export const commandList = {
   clear: ['Clear conversation history', clearConversation],
   clipboard: [
     'Modify automatic clipboard copying',
-    () => updateSetting('clipboard', true, 'boolean'),
+    (str) => updateSetting('clipboard', str, 'boolean'),
   ],
   copy: ['Copy last result to clipboard', copyLastResultCmd],
   wordwrap: ['Modify response word wrapping', (str) => updateSetting('wordWrap', str, 'boolean')],
