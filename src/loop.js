@@ -1,6 +1,5 @@
 import readline from 'readline';
 
-import wrap from 'fast-word-wrap';
 import clipboard from 'node-clipboardy';
 import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
@@ -11,7 +10,7 @@ import { conf, packageJson, settings } from './settings.js';
 import { commandList, COMMAND_PREFIX, exitCmd, runCommand } from './commands.js';
 import { askChatGPT, conversation } from './openai.js';
 import { formatUsage } from './usage.js';
-import { clearLine, errorMsg } from './utils.js';
+import { clearLine, errorMsg, wrap } from './utils.js';
 
 const promptText = pc.green('You: ');
 

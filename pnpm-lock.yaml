@@ -7,7 +7,6 @@ specifiers:
   conf: ^11.0.1
   dotenv: ^16.0.3
   eslint: ^8.35.0
-  fast-word-wrap: ^1.0.1
   jsonfile: ^6.1.0
   md5: ^2.3.0
   minimist: ^1.2.8
@@ -19,6 +18,7 @@ specifiers:
   term-size: ^3.0.2
   update-notifier: ^6.0.2
   wordcount: ^1.1.1
+  wrap-text: ^1.0.9
 
 dependencies:
   '@clack/prompts': 0.6.3
@@ -26,7 +26,6 @@ dependencies:
   commander: 10.0.0
   conf: 11.0.1
   dotenv: 16.0.3
-  fast-word-wrap: 1.0.1
   jsonfile: 6.1.0
   md5: 2.3.0
   minimist: 1.2.8
@@ -38,6 +37,7 @@ dependencies:
   term-size: 3.0.2
   update-notifier: 6.0.2
   wordcount: 1.1.1
+  wrap-text: 1.0.9
 
 devDependencies:
   eslint: 8.35.0
@@ -653,10 +653,6 @@ packages:
   /fast-levenshtein/2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
-
-  /fast-word-wrap/1.0.1:
-    resolution: {integrity: sha512-i31rxWgNNCHS5Yf1bZlFhjpWe2pmbBsaLFtO940wnRq9r2zmCwrjDqfmGrtWTo6LZcSFqwrAwqV/28OE5M7bqw==}
-    dev: false
 
   /fastq/1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
@@ -1511,6 +1507,10 @@ packages:
       ansi-styles: 6.2.1
       string-width: 5.1.2
       strip-ansi: 7.0.1
+    dev: false
+
+  /wrap-text/1.0.9:
+    resolution: {integrity: sha512-NWfjspSgMDXQIMpKM56AwCQPI01OMFRYYJBh6dGNCfH7AOl+j/VqqbiopgJ4VuQfSluqLc+2ekqaPNpYAGZ/Vg==}
     dev: false
 
   /wrappy/1.0.2:

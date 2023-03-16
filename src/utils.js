@@ -1,4 +1,5 @@
 import readline from 'readline';
+import wrapText from 'wrap-text';
 
 import pc from 'picocolors';
 
@@ -11,3 +12,9 @@ export function errorMsg(str) {
   clearLine();
   console.error(`${pc.red('Error')}: ${str}`);
 }
+
+export const wrap = (str, width) =>
+  str
+    .split('\n')
+    .map((line) => wrapText(line, width))
+    .join('\n');
