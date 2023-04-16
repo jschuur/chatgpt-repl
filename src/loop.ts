@@ -1,3 +1,4 @@
+import ora from 'ora';
 import readline from 'readline';
 
 import clipboard from 'node-clipboardy';
@@ -102,14 +103,21 @@ export async function chatLoop() {
   while (true) {
     const input = (await inputPrompt())?.trim();
     const prompt = input.startsWith(COMMAND_PREFIX) ? runCommand(input) : input;
+    let spinner;
 
     if (prompt) {
       const startTime = Date.now();
 
-      process.stdout.write(`\n${pc.cyan('ChatGPT')}: Thinking...`);
-
       try {
+        console.log();
+
+        spinner = ora({
+          discardStdin: false,
+          prefixText: `${pc.cyan('ChatGPT')}: Thinking`,
+          spinner: 'point',
+        }).start();
         const { answer, finishReason, response } = await askChatGPT(prompt);
+        spinner.stop();
 
         clearLine();
         console.log(responseHeader({ response, startTime }));
@@ -117,6 +125,7 @@ export async function chatLoop() {
         if (answer) showLastResponse();
         showFinishReason(finishReason);
       } catch (error) {
+        if (spinner) spinner.stop();
         handleError(error);
       }
     }
