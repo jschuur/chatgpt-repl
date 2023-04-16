@@ -1,16 +1,40 @@
 import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
-import { Configuration, OpenAIApi } from 'openai';
+import { isAxiosError } from 'axios';
+import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai';
 import pc from 'picocolors';
 
-import { conf, settings, updateSetting } from './settings.js';
+import { conversation, updateConversation } from './conversation.js';
+import { conf, settings } from './settings.js';
 import { addUsage } from './usage.js';
+import { errorMsg, getErrorMessage } from './utils.js';
 
-let openai;
+let openai: OpenAIApi;
 
-export let apiKey;
-export let conversation = [{ role: 'system', content: settings.system }];
+export let apiKey = '';
 
-function initOpenAI(key) {
+export function handleError(error: unknown) {
+  if (error) {
+    if (isAxiosError(error)) {
+      const { response } = error;
+
+      if (response) {
+        if (response?.status === 401) {
+          conf.delete('apiKey');
+          errorMsg('Invalid API key. Please restart and enter a new one.');
+
+          process.exit(1);
+        } else
+          errorMsg(
+            `${response?.status}: ${response?.statusText} ${pc.dim(
+              `(${getErrorMessage(error)})`
+            )}\n`
+          );
+      }
+    }
+  } else errorMsg(`${getErrorMessage(error)}\n`);
+}
+
+function initOpenAI(key: string) {
   apiKey = key;
   const configuration = new Configuration({ apiKey });
 
@@ -36,26 +60,22 @@ async function inputApiKey() {
   return key;
 }
 
-async function validateApiKey(key) {
+async function validateApiKey(key: string) {
   try {
     initOpenAI(key);
 
     await openai.listModels();
-  } catch ({ response }) {
-    if (response?.status === 401) {
-      console.error(`${pc.red('Error')}: Invalid API key. Please restart and use a different one.`);
-
-      process.exit(1);
-    }
+  } catch (error) {
+    handleError(error);
   }
 }
 
 export async function apiKeyCheck() {
-  let key = conf.get('apiKey');
+  let key = String(conf.get('apiKey', settings.apiKey));
 
   // validate keys not previously used/saved (options override saved key)
-  if (!key || settings.apiKey) {
-    key = settings.apiKey || (await inputApiKey());
+  if (!key) {
+    key = await inputApiKey();
     await validateApiKey(key);
 
     // don't overwrite a saved key when commander set settings.apiKey via.env()
@@ -65,30 +85,7 @@ export async function apiKeyCheck() {
   if (!openai) initOpenAI(key);
 }
 
-export function updateConversation({ role, content }) {
-  const { historyLength } = settings;
-
-  if (role === 'system') {
-    updateSetting('system', content);
-    clearConversation(false);
-  } else {
-    conversation.push({ role, content });
-
-    if (role === 'assistant')
-      conversation =
-        historyLength <= 0
-          ? [conversation[0]]
-          : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
-  }
-}
-
-export function clearConversation(announce = true) {
-  conversation = [{ role: 'system', content: settings.system }];
-
-  if (announce) console.log('Current conversation history cleared.');
-}
-
-export async function askChatGPT(question) {
+export async function askChatGPT(question: string) {
   const { model, temperature, maxTokens } = settings;
 
   updateConversation({ role: 'user', content: question });
@@ -98,16 +95,14 @@ export async function askChatGPT(question) {
     messages: conversation,
     temperature,
     max_tokens: maxTokens,
-  };
+  } as CreateChatCompletionRequest;
 
   const response = await openai.createChatCompletion(params);
 
   addUsage(response?.data?.usage?.total_tokens);
 
-  const {
-    message: { content: answer },
-    finish_reason: finishReason,
-  } = response?.data?.choices?.[0] || {};
+  const { message: { content: answer = undefined } = {}, finish_reason: finishReason } =
+    response?.data?.choices?.[0] || {};
   if (answer) updateConversation({ role: 'assistant', content: answer });
 
   return { answer, finishReason, response };

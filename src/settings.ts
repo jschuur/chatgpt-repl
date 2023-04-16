@@ -1,0 +1,137 @@
+import path from 'path';
+import url from 'url';
+
+import { Command } from 'commander';
+import Conf from 'conf';
+import jsonfile from 'jsonfile';
+import pc from 'picocolors';
+import { z } from 'zod';
+
+import settingsCmd from './commands/settingsCmd.js';
+import { validationError } from './utils.js';
+import { KNOWN_MODELS, zodBoolean, zodFloat, zodInt, zodModel } from './validate.js';
+
+export const defaultSettings = {
+  temperature: 1.0,
+  maxTokens: 1024,
+  model: KNOWN_MODELS[0],
+  system: 'You are a helpful assistant',
+  historyLength: 5,
+  wordWrap: true,
+  clipboard: false,
+  apiKey: process.env['OPEN_AI_API_KEY'] || '',
+};
+
+const settingsSchema = z.object({
+  maxTokens: zodInt(),
+  temperature: zodFloat(),
+  model: zodModel(),
+  apiKey: z.string().optional(),
+  system: z.string(),
+  historyLength: zodInt(),
+  wordWrap: zodBoolean(),
+  clipboard: zodBoolean(),
+});
+
+export const settingSchema = settingsSchema.keyof();
+
+export type Settings = z.infer<typeof settingsSchema>;
+export type SettingsTypes = Settings[keyof Settings];
+
+export type Setting = keyof Settings;
+
+export const INDENT_PADDING_BUFFER = 2;
+export const DEFAULT_TOKEN_PRICE = 0.000002;
+
+export const openAIPricePerToken: number =
+  process.env.OPENAI_USD_PRICE_PER_TOKEN || DEFAULT_TOKEN_PRICE;
+
+const resolvePath = (filePath: string) =>
+  path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), filePath);
+
+export const conf = new Conf({ projectName: 'chatgpt-repl' });
+
+export const packageJson = jsonfile.readFileSync(resolvePath('../package.json'));
+
+export const parseSetting = (setting: Setting, value: string): SettingsTypes =>
+  settingsSchema.shape[setting].parse(value);
+
+const defaultSetting = (setting: Setting): string | undefined =>
+  process.env[`OPEN_AI_${setting.toUpperCase()}`] || defaultSettings[setting]?.toString();
+
+const isSetting = (field: string): field is Setting => settingSchema.safeParse(field)?.success;
+
+function setSetting(setting: Setting, value: SettingsTypes) {
+  // all this to keep typescript happy. there has to be a better way?
+  // https://stackoverflow.com/questions/75809343/type-string-number-is-not-assignable-to-type-never-when-dynamically-settin/75809489#75809489
+  if ((setting === 'maxTokens' || setting === 'historyLength') && typeof value === 'number')
+    settings[setting] = value;
+  if (
+    (setting === 'model' || setting === 'system' || setting === 'apiKey') &&
+    typeof value === 'string'
+  )
+    settings[setting] = value;
+  if ((setting === 'wordWrap' || setting === 'clipboard') && typeof value === 'boolean')
+    settings[setting] = value;
+
+  console.log(`${pc.cyan(setting.toLowerCase())} set to ${pc.magenta(String(value))}`);
+}
+
+export function updateSetting(setting: Setting, value: string) {
+  if (!value || value.length === 0) {
+    // display the current value
+    console.log(`${setting.padEnd(indentPadding + 3)} ${pc.dim(String(settings[setting]))}`);
+  } else {
+    try {
+      const parsedValue = parseSetting(setting, value);
+      setSetting(setting, parsedValue);
+    } catch (error) {
+      validationError(error, value);
+    }
+  }
+}
+
+export function resetSettings(setting: string) {
+  if (setting) {
+    if (isSetting(setting)) setSetting(setting, initialSettings[setting]);
+    else console.log(pc.red(`Unknown setting: ${setting}`));
+  } else {
+    // reset all settings
+    settings = { ...initialSettings };
+
+    settingsCmd('Settings reset');
+  }
+}
+
+const program = new Command();
+
+program
+  .name('chatgpt-repl')
+  .version(packageJson.version, '-v, --version', 'Show the current version number')
+  .helpOption('-h, --help', 'Show help');
+
+program
+  .description('ChatGPT REPL interactive command line tool')
+
+  .option(
+    '-c, --clipboard <boolean>',
+    'Enable/disable copying responses to clipboard',
+    defaultSetting('clipboard')
+  )
+  .option('-k, --apiKey <string>', 'Set (and save) OpenAI API key')
+  .option(
+    '-l, --history-length <integer>',
+    'Set conversation history length',
+    defaultSetting('historyLength')
+  )
+  .option('-m, --model <string>', 'Set OpenAI model', defaultSetting('model'))
+  .option('-t, --temperature <float>', 'Set temperature', defaultSetting('temperature'))
+  .option('-s, --system <string>', 'Set system prompt', defaultSetting('system'))
+  .option('-w, --word-wrap <boolean>', 'Enable/disable word wrap', defaultSetting('wordWrap'))
+  .option('-x, --max-tokens <integer>', 'Max tokens per request', defaultSetting('maxTokens'));
+
+export let settings: Settings = settingsSchema.parse(program.parse().opts());
+const initialSettings = { ...settings };
+
+export const indentPadding =
+  Math.max(...Object.keys(settings).map((k) => k.length)) + INDENT_PADDING_BUFFER;

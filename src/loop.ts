@@ -5,29 +5,33 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
-import { conf, packageJson, settings } from './settings.js';
+import { packageJson, settings } from './settings.js';
 
-import { commandList, COMMAND_PREFIX, exitCmd, runCommand } from './commands.js';
-import { askChatGPT, conversation } from './openai.js';
+import { COMMAND_PREFIX, commandList, runCommand } from './commands/commands.js';
+import exitCmd from './commands/exitCmd.js';
+
+import { conversation } from './conversation.js';
+import { askChatGPT, handleError } from './openai.js';
 import { formatUsage } from './usage.js';
 import { clearLine, errorMsg, wrap } from './utils.js';
 
-const promptText = pc.green('You: ');
+const promptText: string = pc.green('You: ');
 
-let rl;
+let rl: readline.Interface;
 
 function initReadline() {
   rl = readline
     .createInterface({
       input: process.stdin,
       output: process.stdout,
-      completer: (line) => {
-        const cmd = line?.split(' ')?.[0];
+      completer: (line: string) => {
+        const input = line.trim();
+        const cmd = input.split(' ')?.[0];
         const commands = Object.keys(commandList).map((c) => `${COMMAND_PREFIX}${c}`);
 
-        if (!cmd || !line.startsWith(COMMAND_PREFIX) || commands.includes(cmd)) return [[], line];
+        if (!cmd || !input.startsWith(COMMAND_PREFIX) || commands.includes(cmd)) return [[], input];
 
-        const hits = commands.filter((c) => c.startsWith(line));
+        const hits = commands.filter((c) => c.startsWith(input));
 
         return [hits.length ? hits.map((c) => `${c} `) : commands, cmd];
       },
@@ -35,7 +39,7 @@ function initReadline() {
     .on('close', exitCmd);
 }
 
-function showFinishReason(finishReason) {
+function showFinishReason(finishReason: string | undefined) {
   if (!finishReason || finishReason === 'stop') return;
 
   if (finishReason === 'length')
@@ -56,27 +60,20 @@ export function showLastResponse() {
     ? wrap(`${pc.cyan('ChatGPT')}: ${answer}`, columns - 5)
     : answer;
 
-  console.log(`\n${answerFormatted}`);
+  console.log(`\n${answerFormatted}\n`);
 
   if (settings.clipboard) clipboard.writeSync(answer);
 }
 
-function handleError(error) {
-  const { response, message } = error;
-
-  if (response) {
-    if (response?.status === 401) {
-      conf.delete('apiKey');
-      errorMsg('Invalid API key. Please restart and enter a new one.');
-
-      process.exit(1);
-    } else errorMsg(`${response?.status}: ${response?.statusText} ${pc.dim(`(${message})`)}\n`);
-  } else if (message) {
-    errorMsg(`${message}\n`);
-  }
-}
-
-function responseHeader({ response, startTime }) {
+function responseHeader({
+  response,
+  startTime,
+}: {
+  response: any;
+  // TODO: refactor to remove any
+  // response: AxiosResponse<CreateChatCompletionResponse, any>;
+  startTime: number;
+}) {
   const usage = formatUsage(response);
 
   return pc.dim(
@@ -86,7 +83,7 @@ function responseHeader({ response, startTime }) {
   );
 }
 
-async function inputPrompt() {
+async function inputPrompt(): Promise<string> {
   return new Promise((resolve) => {
     rl.question(promptText, resolve);
   });
@@ -103,17 +100,16 @@ export async function chatLoop() {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    let input = await inputPrompt();
+    const input = (await inputPrompt())?.trim();
+    const prompt = input.startsWith(COMMAND_PREFIX) ? runCommand(input) : input;
 
-    if (input.startsWith(COMMAND_PREFIX)) input = runCommand(input);
-
-    if (input) {
+    if (prompt) {
       const startTime = Date.now();
 
       process.stdout.write(`\n${pc.cyan('ChatGPT')}: Thinking...`);
 
       try {
-        const { answer, finishReason, response } = await askChatGPT(input);
+        const { answer, finishReason, response } = await askChatGPT(prompt);
 
         clearLine();
         console.log(responseHeader({ response, startTime }));

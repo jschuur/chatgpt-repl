@@ -60,7 +60,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 
 - `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting, or show it without a value
 - `.settings` shows all the current settings
-- `.reset` resets settings to when you launched the current session
+- `.reset` resets one or all settings to when you launched the current session
 - `.retry` reruns the last prompt with the latest settings
 - `.last` shows the last response again without running it through ChatGPT again (applies new word wrap/clipboard settings)
 - `.clear` clears the [conversation history](#controlling-conversation-context)
@@ -92,6 +92,6 @@ When asked 'What are the benefits of a ChatGPT command line interface?', it whol
 
 ## Stack
 
-Some of the libraries used: [clack](https://github.com/natemoo-re/clack/) for some of the prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard.
+Some of the libraries used: [clack](https://github.com/natemoo-re/clack/) for some of the prompt UI, [OpenAI Node.js library](https://github.com/openai/openai-node) to interact with the ChatGPT API, [node-clipboardy](https://www.npmjs.com/package/node-clipboardy) to copy responses to the system clipboard, [zod](https://zod.dev/) for type safe validation [tsx](https://www.npmjs.com/package/tsx) for local TypeScript development.
 
 \- [Joost Schuur](https://joostschuur.com) ([@joostschuur](https://twitter.com/joostschuur))
