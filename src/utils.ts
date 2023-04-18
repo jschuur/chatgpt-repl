@@ -37,3 +37,10 @@ export const validationError = (error: unknown, setting: string) => {
       `${pc.red('Error')}: ${getErrorMessage(error, `Unknown error updating  ${setting}`)}`
     );
 };
+
+export function lengthWithoutColor(str: string) {
+  // eslint-disable-next-line no-control-regex
+  const colorPattern = /\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g;
+
+  return str.replace(colorPattern, '').length;
+}

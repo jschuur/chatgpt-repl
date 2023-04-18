@@ -19,6 +19,7 @@ export const defaultSettings = {
   historyLength: 5,
   wordWrap: true,
   clipboard: false,
+  stream: true,
   apiKey: process.env['OPEN_AI_API_KEY'] || '',
 };
 
@@ -31,6 +32,7 @@ const settingsSchema = z.object({
   historyLength: zodInt(),
   wordWrap: zodBoolean(),
   clipboard: zodBoolean(),
+  stream: zodBoolean(),
 });
 
 export const settingSchema = settingsSchema.keyof();
@@ -71,7 +73,10 @@ function setSetting(setting: Setting, value: SettingsTypes) {
     typeof value === 'string'
   )
     settings[setting] = value;
-  if ((setting === 'wordWrap' || setting === 'clipboard') && typeof value === 'boolean')
+  if (
+    (setting === 'wordWrap' || setting === 'clipboard' || setting === 'stream') &&
+    typeof value === 'boolean'
+  )
     settings[setting] = value;
 
   console.log(`${pc.cyan(setting.toLowerCase())} set to ${pc.magenta(String(value))}`);
@@ -128,7 +133,8 @@ program
   .option('-t, --temperature <float>', 'Set temperature', defaultSetting('temperature'))
   .option('-s, --system <string>', 'Set system prompt', defaultSetting('system'))
   .option('-w, --word-wrap <boolean>', 'Enable/disable word wrap', defaultSetting('wordWrap'))
-  .option('-x, --max-tokens <integer>', 'Max tokens per request', defaultSetting('maxTokens'));
+  .option('-x, --max-tokens <integer>', 'Max tokens per request', defaultSetting('maxTokens'))
+  .option('-r, --stream <boolean>', 'Enable/disabled streamed response', defaultSetting('stream'));
 
 export let settings: Settings = settingsSchema.parse(program.parse().opts());
 const initialSettings = { ...settings };

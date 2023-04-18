@@ -1,6 +1,7 @@
 declare module 'wordcount';
 declare module 'node-clipboardy';
 declare module 'picocolors';
+declare module 'streamed-chatgpt-api';
 
 declare namespace NodeJS {
   export interface ProcessEnv {

@@ -1,5 +1,5 @@
 import { clearConversation, updateConversation } from '../conversation.js';
-import { showLastResponse } from '../loop.js';
+import { showLastResponse } from '../response.js';
 import { packageJson, resetSettings, updateSetting } from '../settings.js';
 
 import copyCmd from './copyCmd.js';
@@ -67,6 +67,10 @@ export const commandList: CommandList = {
   wordwrap: [
     'Modify response word wrapping',
     (value: string) => updateSetting('wordWrap', value.trim()),
+  ],
+  stream: [
+    'stream responses as they are received',
+    (value: string) => updateSetting('stream', value.trim()),
   ],
   last: ['Show the last response again', showLastResponse],
   exit: ['Exit chatgpt-repl', exitCmd],

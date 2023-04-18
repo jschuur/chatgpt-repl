@@ -1,38 +1,33 @@
 import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
-import { isAxiosError } from 'axios';
+import clipboard from 'node-clipboardy';
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai';
-import pc from 'picocolors';
+import ora, { Ora } from 'ora';
+import { fetchStreamedChatContent } from 'streamed-chatgpt-api';
 
 import { conversation, updateConversation } from './conversation.js';
+import {
+  chatGPTPrompt,
+  handleError,
+  resetResponseCol,
+  responseHeader,
+  showLastResponse,
+  showResponseChunk,
+  spinnerOptions,
+} from './response.js';
 import { conf, settings } from './settings.js';
 import { addUsage } from './usage.js';
-import { errorMsg, getErrorMessage } from './utils.js';
 
 let openai: OpenAIApi;
 
+type ChatGPTResult = {
+  response?: any;
+  finishReason?: string;
+  answer?: string;
+  error?: any;
+};
+
 export let apiKey = '';
-
-export function handleError(error: unknown) {
-  if (error) {
-    if (isAxiosError(error)) {
-      const { response } = error;
-
-      if (response) {
-        if (response?.status === 401) {
-          conf.delete('apiKey');
-          errorMsg('Invalid API key. Please restart and enter a new one.');
-
-          process.exit(1);
-        } else
-          errorMsg(
-            `${response?.status}: ${response?.statusText} ${pc.dim(
-              `(${getErrorMessage(error)})`
-            )}\n`
-          );
-      }
-    }
-  } else errorMsg(`${getErrorMessage(error)}\n`);
-}
+// TODO move conf to settings?
 
 function initOpenAI(key: string) {
   apiKey = key;
@@ -85,25 +80,95 @@ export async function apiKeyCheck() {
   if (!openai) initOpenAI(key);
 }
 
+async function chatCompletionStreamed(params: any): Promise<ChatGPTResult> {
+  return new Promise((resolve, reject) => {
+    let answer = '';
+    const spinner = ora(spinnerOptions).start();
+
+    fetchStreamedChatContent(
+      { apiKey, ...params },
+      (content: string) => {
+        // onResponse
+        if (spinner.isSpinning) {
+          spinner.stop();
+          process.stdout.write(chatGPTPrompt);
+        }
+        showResponseChunk(content);
+        answer += content;
+      },
+      () => {
+        // onFinish
+        process.stdout.write('\n\n');
+
+        resolve({ answer });
+      },
+      (error: any) => {
+        // onError
+        reject({ error });
+      }
+    );
+  });
+}
+
+async function chatCompletionAsync(params: CreateChatCompletionRequest): Promise<ChatGPTResult> {
+  let spinner: Ora | undefined;
+
+  try {
+    const spinner = ora(spinnerOptions).start();
+
+    const response = await openai.createChatCompletion(params);
+    spinner.stop();
+
+    addUsage(response?.data?.usage?.total_tokens);
+
+    // TODO: bring finishReason back
+    const { message: { content: answer = undefined } = {} } = response?.data?.choices?.[0] || {};
+
+    return { answer, response };
+  } catch (error) {
+    if (spinner) spinner.stop();
+    handleError(error);
+
+    return { answer: undefined, response: undefined };
+  }
+}
+
 export async function askChatGPT(question: string) {
-  const { model, temperature, maxTokens } = settings;
+  const { model, temperature, maxTokens, stream } = settings;
 
-  updateConversation({ role: 'user', content: question });
-
+  const startTime = Date.now();
   const params = {
     model,
-    messages: conversation,
     temperature,
-    max_tokens: maxTokens,
   } as CreateChatCompletionRequest;
 
-  const response = await openai.createChatCompletion(params);
+  console.log();
+  updateConversation({ role: 'user', content: question });
 
-  addUsage(response?.data?.usage?.total_tokens);
+  const { answer, response } = stream
+    ? await chatCompletionStreamed({
+        ...params,
+        messageInput: conversation,
+        maxTokens,
+        stream: true,
+      })
+    : await chatCompletionAsync({
+        ...params,
+        max_tokens: maxTokens,
+        messages: conversation,
+      });
 
-  const { message: { content: answer = undefined } = {}, finish_reason: finishReason } =
-    response?.data?.choices?.[0] || {};
-  if (answer) updateConversation({ role: 'assistant', content: answer });
+  if (answer) {
+    updateConversation({ role: 'assistant', content: answer });
 
-  return { answer, finishReason, response };
+    if (stream) resetResponseCol();
+    else showLastResponse();
+
+    if (settings.clipboard) clipboard.writeSync(answer);
+  }
+
+  // showFinishReason(finishReason);
+
+  console.log(responseHeader({ response, startTime }));
+  console.log();
 }
