@@ -20,7 +20,7 @@ export const defaultSettings = {
   wordWrap: true,
   clipboard: false,
   stream: true,
-  apiKey: process.env['OPEN_AI_API_KEY'] || '',
+  apiKey: process.env['OPEN_AI_APIKEY'] || '',
 };
 
 const settingsSchema = z.object({
@@ -46,7 +46,7 @@ export const INDENT_PADDING_BUFFER = 2;
 export const DEFAULT_TOKEN_PRICE = 0.000002;
 
 export const openAIPricePerToken: number =
-  process.env.OPENAI_USD_PRICE_PER_TOKEN || DEFAULT_TOKEN_PRICE;
+  parseFloat(process.env.OPENAI_USD_PRICE_PER_TOKEN) || DEFAULT_TOKEN_PRICE;
 
 const resolvePath = (filePath: string) =>
   path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), filePath);
