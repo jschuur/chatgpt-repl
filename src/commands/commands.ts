@@ -60,12 +60,12 @@ export const commandList: CommandList = {
   retry: ['Send previous prompt again', retryCmd],
   clear: ['Clear conversation history', () => clearConversation()],
   clipboard: [
-    'Modify automatic clipboard copying',
+    'Show/update automatic clipboard copying',
     (value: string) => updateSetting('clipboard', value.trim()),
   ],
   copy: ['Copy last result to clipboard', copyCmd],
   wordwrap: [
-    'Modify response word wrapping',
+    'Show/update response word wrapping',
     (value: string) => updateSetting('wordWrap', value.trim()),
   ],
   stream: [

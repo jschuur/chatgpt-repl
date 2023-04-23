@@ -44,8 +44,8 @@ dependencies:
     specifier: ^8.0.0
     version: 8.0.0
   streamed-chatgpt-api:
-    specifier: ^1.0.7
-    version: 1.0.7
+    specifier: github:shrft/streamed-chatgpt-api
+    version: github.com/shrft/streamed-chatgpt-api/60bbdc16e68163508c4ba42aa809a59b449ab5fe
   term-size:
     specifier: ^3.0.2
     version: 3.0.2
@@ -2105,13 +2105,6 @@ packages:
       bl: 5.1.0
     dev: false
 
-  /streamed-chatgpt-api@1.0.7:
-    resolution: {integrity: sha512-pVbRP9gvYCK7IfHn59Z1GrMjD24UzbOlSodhpJpMpXucB8zTixdZ3Y4DfUsi3G9dWLqYml4R74BeIlVJAXCvMg==}
-    engines: {node: '>=18.0.0'}
-    optionalDependencies:
-      node-fetch: 3.3.1
-    dev: false
-
   /string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -2373,4 +2366,13 @@ packages:
 
   /zod@3.21.4:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+    dev: false
+
+  github.com/shrft/streamed-chatgpt-api/60bbdc16e68163508c4ba42aa809a59b449ab5fe:
+    resolution: {tarball: https://codeload.github.com/shrft/streamed-chatgpt-api/tar.gz/60bbdc16e68163508c4ba42aa809a59b449ab5fe}
+    name: streamed-chatgpt-api
+    version: 1.0.8
+    engines: {node: '>=18.0.0'}
+    optionalDependencies:
+      node-fetch: 3.3.1
     dev: false

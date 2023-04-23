@@ -13,6 +13,7 @@ type ResponseData = {
   // response: AxiosResponse<CreateChatCompletionResponse, any>;
   response: any;
   startTime: number;
+  cancelled?: boolean;
 };
 
 export const chatGPTPrompt = `${pc.cyan('ChatGPT')}: `;
@@ -21,6 +22,7 @@ let responseCol = lengthWithoutColor(chatGPTPrompt);
 export const spinnerOptions = {
   discardStdin: false,
   prefixText: chatGPTPrompt,
+  text: '(Ctrl-C to cancel)',
   spinner: 'point',
 } as const;
 
@@ -56,12 +58,13 @@ export function showFinishReason(finishReason: string | undefined) {
   else console.log(pc.dim(`Unknown finish reason: ${pc.magenta(finishReason)}\n`));
 }
 
-export function responseHeader({ response, startTime }: ResponseData) {
-  let responseText = `Response${settings.clipboard ? ' (copied to clipboard)' : ''} in ${pc.green(
-    prettyMilliseconds(Date.now() - startTime)
-  )}. `;
+export function responseHeader({ response, startTime, cancelled }: ResponseData) {
+  let responseText = cancelled
+    ? 'Request cancelled after'
+    : `Response${settings.clipboard ? ' (copied to clipboard)' : ''} in`;
+  responseText += ` ${pc.green(prettyMilliseconds(Date.now() - startTime))}. `;
 
-  // TODO: estimate by counting response chunks
+  // TODO: estimate streamed response by counting response chunks
   if (response) responseText += formatUsage(response);
 
   return pc.dim(responseText);

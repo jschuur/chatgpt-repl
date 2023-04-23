@@ -34,6 +34,8 @@ Once installed:
 
 Responses are streamed in by default. This can be disabled with the `.stream false` command or the `-r` option. Streamed responses currently [don't include](https://community.openai.com/t/openai-api-get-usage-tokens-in-response-when-set-stream-true/141866/2) token usage from the API (issue to [estimate usage](https://github.com/jschuur/chatgpt-repl/issues/46)).
 
+Cancel a request in progress with Ctrl-C at any time, even when streaming.
+
 ### What about GPT-4?
 
 GPT-4 was [announced](https://openai.com/product/gpt-4) on March 14th, 2023 and API support for it started out with a waitlist. If it's available to you, it should work if you provide an [alternate model name](https://platform.openai.com/docs/models/gpt-4) via `--model gpt-4` (or the `.model gpt-4` command), since the Chat Completion API hasn't changed.
@@ -114,7 +116,7 @@ Some of the libraries used:
 - [clack](https://github.com/natemoo-re/clack/): some of the prompt UI
 - [commander](https://www.npmjs.com/package/commander): command line options
 - [OpenAI Node.js library](https://github.com/openai/openai-node): ChatGPT API responses
-- [streamed-chatgpt-api](https://github.com/jddev273/streamed-chatgpt-api): streaming ChatGPT responses
+- [streamed-chatgpt-api](https://github.com/jddev273/streamed-chatgpt-api): streaming ChatGPT responses (currently using [fork](https://github.com/shrft/streamed-chatgpt-api) to cancel requests)
 - [node-clipboardy](https://www.npmjs.com/package/node-clipboardy): copy responses to the system clipboard
 - [zod](https://zod.dev/): type safe validation
 - [tsx](https://www.npmjs.com/package/tsx): local TypeScript development

@@ -2,9 +2,11 @@ import { confirm, intro, isCancel, outro, text } from '@clack/prompts';
 import clipboard from 'node-clipboardy';
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai';
 import ora, { Ora } from 'ora';
+import pc from 'picocolors';
 import { fetchStreamedChatContent } from 'streamed-chatgpt-api';
 
 import { conversation, updateConversation } from './conversation.js';
+import { rl } from './loop.js';
 import {
   chatGPTPrompt,
   handleError,
@@ -24,13 +26,14 @@ type ChatGPTResult = {
   finishReason?: string;
   answer?: string;
   error?: any;
+  cancelled?: boolean;
 };
 
 export let apiKey = '';
-// TODO move conf to settings?
 
 function initOpenAI(key: string) {
   apiKey = key;
+  // TODO move conf to settings?
   const configuration = new Configuration({ apiKey });
 
   openai = new OpenAIApi(configuration);
@@ -83,24 +86,38 @@ export async function apiKeyCheck() {
 async function chatCompletionStreamed(params: any): Promise<ChatGPTResult> {
   return new Promise((resolve, reject) => {
     let answer = '';
+    let cancelled = false;
     const spinner = ora(spinnerOptions).start();
+
+    const markCancelled = () => (cancelled = true);
+
+    rl.on('SIGINT', markCancelled);
 
     fetchStreamedChatContent(
       { apiKey, ...params },
-      (content: string) => {
+      (content: string, reader: ReadableStreamDefaultReader) => {
         // onResponse
         if (spinner.isSpinning) {
           spinner.stop();
           process.stdout.write(chatGPTPrompt);
         }
-        showResponseChunk(content);
-        answer += content;
+
+        // TODO: handle cancellation sooner than next chunk
+        if (cancelled) reader.cancel();
+        else {
+          showResponseChunk(content);
+          answer += content;
+        }
       },
       () => {
         // onFinish
-        process.stdout.write('\n\n');
+        rl.off('SIGINT', markCancelled);
 
-        resolve({ answer });
+        if (cancelled)
+          process.stdout.write(pc.yellow(`${answer ? ' ...\n' : ''}Response cancelled\n\n`));
+        else process.stdout.write('\n\n');
+
+        resolve({ answer, cancelled });
       },
       (error: any) => {
         // onError
@@ -112,11 +129,17 @@ async function chatCompletionStreamed(params: any): Promise<ChatGPTResult> {
 
 async function chatCompletionAsync(params: CreateChatCompletionRequest): Promise<ChatGPTResult> {
   let spinner: Ora | undefined;
+  const controller = new AbortController();
+  let cancelled = false;
+
+  const stopRequest = () => controller.abort();
 
   try {
-    const spinner = ora(spinnerOptions).start();
+    spinner = ora(spinnerOptions).start();
 
-    const response = await openai.createChatCompletion(params);
+    rl.on('SIGINT', stopRequest);
+
+    const response = await openai.createChatCompletion(params, { signal: controller.signal });
     spinner.stop();
 
     addUsage(response?.data?.usage?.total_tokens);
@@ -124,12 +147,20 @@ async function chatCompletionAsync(params: CreateChatCompletionRequest): Promise
     // TODO: bring finishReason back
     const { message: { content: answer = undefined } = {} } = response?.data?.choices?.[0] || {};
 
-    return { answer, response };
-  } catch (error) {
-    if (spinner) spinner.stop();
-    handleError(error);
+    rl.off('SIGINT', stopRequest);
 
-    return { answer: undefined, response: undefined };
+    return { answer, response, cancelled };
+  } catch (error: any) {
+    if (spinner) spinner.stop();
+
+    if (error.constructor.name === 'Cancel') {
+      process.stdout.write(`${chatGPTPrompt}${pc.yellow('Response cancelled\n\n')}`);
+      cancelled = true;
+    } else handleError(error);
+
+    rl.off('SIGINT', stopRequest);
+
+    return { answer: undefined, response: undefined, cancelled };
   }
 }
 
@@ -145,7 +176,7 @@ export async function askChatGPT(question: string) {
   console.log();
   updateConversation({ role: 'user', content: question });
 
-  const { answer, response } = stream
+  const { answer, response, cancelled } = stream
     ? await chatCompletionStreamed({
         ...params,
         messageInput: conversation,
@@ -164,11 +195,11 @@ export async function askChatGPT(question: string) {
     if (stream) resetResponseCol();
     else showLastResponse();
 
-    if (settings.clipboard) clipboard.writeSync(answer);
+    if (settings.clipboard && !cancelled) clipboard.writeSync(answer);
   }
 
   // showFinishReason(finishReason);
 
-  console.log(responseHeader({ response, startTime }));
+  console.log(responseHeader({ response, startTime, cancelled }));
   console.log();
 }

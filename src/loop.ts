@@ -10,7 +10,7 @@ import { packageJson } from './settings.js';
 
 const promptText: string = pc.green('You: ');
 
-let rl: readline.Interface;
+export let rl: readline.Interface;
 
 function initReadline() {
   rl = readline
