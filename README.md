@@ -47,14 +47,15 @@ Note however that GPT-4's pricing appears to be [significantly higher](https://c
 - `-v, --version` Show version number
 - `-h, --help` Show help
 
-- `-c, --clipboard <boolean>` Enable/disable copying the latest response to the clipboard as it is shown
-- `-k, --api-key <key>` Set (and save) OpenAI API key
-- `-l, --history-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_HISTORY_LENGTH` env)
+- `-c, --clipboard <boolean>` Enable/disable copying the latest response to the clipboard as it is shown (default: 'false' or `OPENAI_CLIPBOARD` env)
+- `-k, --api-key <key>` Set (and save) OpenAI API key (`OPENAI_APIKEY` env)
+- `-l, --history-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_HISTORYLENGTH` env)
 - `-m, --model` <model> Set the OpenAI [model](https://platform.openai.com/docs/api-reference/chat/create#chat/create-model) (default: gpt-3.5-turbo or `OPENAI_MODEL` env)
 - `-t, --temperature` <num> Set the [temperature](https://platform.openai.com/docs/quickstart/adjust-your-settings) for more 'random' responses (default: 1 or `OPENAI_TEMPERATURE` env)
 - `-s, --system` <text> Set the [system](https://platform.openai.com/docs/guides/chat/introduction) to set the tone of the response (default: 'You are a helpful assistant' or `OPENAI_SYSTEM` env)
-- `-w, --word-wrap <boolean>` Enable/disable automatic word wrapping in response output
-- `-x, --max-tokens <num>` Set the [max tokens](https://platform.openai.com/docs/guides/chat/managing-tokens) to use and control costs (default: 1024 or `OPENAI_MAX_TOKENS` env)
+- `-r, --stream` <boolean> Enable/disable streamed responses (default: 'true' or `OPENAI_STREAM` env)
+- `-w, --word-wrap <boolean>` Enable/disable automatic word wrapping in response output (default: 'true' or `OPENAI_WORDWRAP` env)
+- `-x, --max-tokens <num>` Set the [max tokens](https://platform.openai.com/docs/guides/chat/managing-tokens) to use and control costs (default: 1024 or `OPENAI_MAXTOKENS` env)
 
 Defaults can be overridden with environment variables where indicated ('env').
 
@@ -66,7 +67,7 @@ OpenAI API usage is paid after a free trial, but [extremely cheap](https://opena
 
 By default, the last 3 prompts/responses in a session are used in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases costs by using more API tokens.
 
-The `-l <num>` option (or `OPENAI_HISTORY_LENGTH` environment variable or `.historylength` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
+The `-l <num>` option (or `OPENAI_HISTORYLENGTH` environment variable or `.historylength` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
 
 Thus with a history length of zero, you couldn't ask 'What is the Sun?' and later 'How far away from the Earth is it?', since it would have no frame of reference for 'it'.
 

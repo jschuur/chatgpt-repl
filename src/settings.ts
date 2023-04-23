@@ -20,7 +20,7 @@ export const defaultSettings = {
   wordWrap: true,
   clipboard: false,
   stream: true,
-  apiKey: process.env['OPEN_AI_APIKEY'] || '',
+  apiKey: process.env['OPENAI_APIKEY'] || '',
 };
 
 const settingsSchema = z.object({
@@ -59,7 +59,7 @@ export const parseSetting = (setting: Setting, value: string): SettingsTypes =>
   settingsSchema.shape[setting].parse(value);
 
 const defaultSetting = (setting: Setting): string | undefined =>
-  process.env[`OPEN_AI_${setting.toUpperCase()}`] || defaultSettings[setting]?.toString();
+  process.env[`OPENAI_${setting.toUpperCase()}`] || defaultSettings[setting]?.toString();
 
 const isSetting = (field: string): field is Setting => settingSchema.safeParse(field)?.success;
 
