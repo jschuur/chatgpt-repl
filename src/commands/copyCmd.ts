@@ -3,7 +3,7 @@ import pc from 'picocolors';
 import pluralize from 'pluralize';
 import wordcount from 'wordcount';
 
-import { conversation } from '../conversation.js';
+import { conversation } from '../openai/conversation.js';
 
 export default function copyLastResultCmd() {
   const lastMessage = conversation[conversation.length - 1];

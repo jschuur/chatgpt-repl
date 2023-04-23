@@ -41,7 +41,7 @@ Once installed:
 6. Hit Ctrl-C or enter `.exit` to end the session when sufficiently filled with knowledge.
 7. Use the up/down arrows to access previously entered prompts or commands.
 
-Responses are streamed in by default. This can be disabled with the `.stream false` command or the `--stream false` CLI ption. Streamed responses currently [don't include](https://community.openai.com/t/openai-api-get-usage-tokens-in-response-when-set-stream-true/141866/2) token usage from the API and not included in usage tracking (issue to [estimate usage](https://github.com/jschuur/chatgpt-repl/issues/46)).
+Responses are streamed in by default. This can be disabled with the `.stream false` command or the `--stream false` CLI option. Streamed responses currently [don't include](https://community.openai.com/t/openai-api-get-usage-tokens-in-response-when-set-stream-true/141866/2) token usage from the API and not included in usage tracking (issue to [estimate usage](https://github.com/jschuur/chatgpt-repl/issues/46)).
 
 Cancel a request in progress with Ctrl-C at any time, even when streaming.
 

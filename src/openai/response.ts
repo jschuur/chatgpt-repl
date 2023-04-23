@@ -3,10 +3,10 @@ import pc from 'picocolors';
 import prettyMilliseconds from 'pretty-ms';
 import terminalSize from 'term-size';
 
+import { conf, settings } from '../settings.js';
+import { formatUsage } from '../usage.js';
+import { errorMsg, getErrorMessage, lengthWithoutColor, wrap } from '../utils.js';
 import { conversation } from './conversation.js';
-import { conf, settings } from './settings.js';
-import { formatUsage } from './usage.js';
-import { errorMsg, getErrorMessage, lengthWithoutColor, wrap } from './utils.js';
 
 type ResponseData = {
   // TODO: refactor to remove any

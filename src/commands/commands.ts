@@ -1,5 +1,5 @@
-import { clearConversation, updateConversation } from '../conversation.js';
-import { showLastResponse } from '../response.js';
+import { clearConversation, updateConversation } from '../openai/conversation.js';
+import { showLastResponse } from '../openai/response.js';
 import { packageJson, resetSettings, updateSetting } from '../settings.js';
 
 import copyCmd from './copyCmd.js';

@@ -5,7 +5,7 @@ import pc from 'picocolors';
 import updateNotifier from 'update-notifier';
 
 import { chatLoop } from './loop.js';
-import { apiKeyCheck } from './openai.js';
+import { apiKeyCheck } from './openai/openai.js';
 import { packageJson } from './settings.js';
 import { getErrorMessage } from './utils.js';
 

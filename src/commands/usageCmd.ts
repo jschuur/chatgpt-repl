@@ -1,6 +1,6 @@
 import pc from 'picocolors';
 
-import { apiKey } from '../openai.js';
+import { apiKey } from '../openai/openai.js';
 import { formatTotalUsage } from '../usage.js';
 
 export default function usageCmd() {

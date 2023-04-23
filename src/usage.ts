@@ -4,7 +4,7 @@ import { CreateChatCompletionResponse } from 'openai';
 import pc from 'picocolors';
 import pluralize from 'pluralize';
 
-import { apiKey } from './openai.js';
+import { apiKey } from './openai/openai.js';
 import { conf, openAIPricePerToken } from './settings.js';
 
 export let sessionUsageTokens = 0;

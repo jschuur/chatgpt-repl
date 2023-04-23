@@ -5,7 +5,7 @@ import pc from 'picocolors';
 import { COMMAND_PREFIX, commandList, runCommand } from './commands/commands.js';
 import exitCmd from './commands/exitCmd.js';
 
-import { askChatGPT } from './openai.js';
+import { askChatGPT } from './openai/openai.js';
 import { packageJson } from './settings.js';
 
 const promptText: string = pc.green('You: ');

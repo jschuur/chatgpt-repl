@@ -1,4 +1,4 @@
-import { conversation } from '../conversation.js';
+import { conversation } from '../openai/conversation.js';
 
 export default function retryCmd() {
   if (conversation.length < 3) console.warn('No previous response to retry.');

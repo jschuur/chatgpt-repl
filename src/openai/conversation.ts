@@ -1,4 +1,4 @@
-import { settings, updateSetting } from './settings.js';
+import { settings, updateSetting } from '../settings.js';
 
 type ConversationRole = 'system' | 'user' | 'assistant';
 

@@ -5,8 +5,10 @@ import ora, { Ora } from 'ora';
 import pc from 'picocolors';
 import { fetchStreamedChatContent } from 'streamed-chatgpt-api';
 
+import { rl } from '../loop.js';
+import { conf, settings } from '../settings.js';
+import { addUsage } from '../usage.js';
 import { conversation, updateConversation } from './conversation.js';
-import { rl } from './loop.js';
 import {
   chatGPTPrompt,
   handleError,
@@ -16,8 +18,6 @@ import {
   showResponseChunk,
   spinnerOptions,
 } from './response.js';
-import { conf, settings } from './settings.js';
-import { addUsage } from './usage.js';
 
 let openai: OpenAIApi;
 
