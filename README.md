@@ -1,20 +1,29 @@
 # ChatGPT REPL
 
-Simple ChatGPT interactive command line [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop), using the [OpenAI API](https://platform.openai.com/docs/guides/chat) for per usage billing.
+ChatGPT interactive command line [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop), using the [OpenAI API](https://platform.openai.com/docs/guides/chat) for per usage billing.
 
-[Bring your own](#usage) API key.
+An experiment inspired by [two](https://twitter.com/sandbags/status/1631933273487048704) [tweets](https://twitter.com/joostschuur/status/1631948339599093763).
+
+## Features
+
+- [Bring](#usage) your own API key
+- Shell like REPL with history access and commands
+- Stream responses
+- Controllable [conversation context](#controlling-conversation-context)
+- Clipboard copying
+- Local API usage tracking
+
+See the [current roadmap](https://github.com/users/jschuur/projects/3) for plans and ideas, including issues with a [help wanted](https://github.com/jschuur/chatgpt-repl/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label. Feel free to [open an issue](https://github.com/jschuur/chatgpt-repl/issues/new) if you encounter any bugs or have suggestions.
+
+## Preview
 
 <p align="center">
   <img src="https://github.com/jschuur/chatgpt-repl/blob/main/screenshot.png?raw=true" alt="Screenshot of the chatgpt-repl shell command in action, replying with a reassuring haiku to the prompt 'write a haiku about benevolent AI overlords'">
 </p>
 
-An experiment inspired by [two](https://twitter.com/sandbags/status/1631933273487048704) [tweets](https://twitter.com/joostschuur/status/1631948339599093763).
-
-See the [current roadmap](https://github.com/users/jschuur/projects/3) for plans and ideas, including issues with a [help wanted](https://github.com/jschuur/chatgpt-repl/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label. Feel free to [open an issue](https://github.com/jschuur/chatgpt-repl/issues/new) if you encounter any bugs or have suggestions.
-
 ## Install
 
-Use your favourite package manager to install the `chatgpt-repl` package globally. With npm:
+Use your favourite package manager to install the `chatgpt-repl` command globally. With npm:
 
 ```bash
 npm install -g chatgpt-repl
@@ -32,15 +41,15 @@ Once installed:
 6. Hit Ctrl-C or enter `.exit` to end the session when sufficiently filled with knowledge.
 7. Use the up/down arrows to access previously entered prompts or commands.
 
-Responses are streamed in by default. This can be disabled with the `.stream false` command or the `-r` option. Streamed responses currently [don't include](https://community.openai.com/t/openai-api-get-usage-tokens-in-response-when-set-stream-true/141866/2) token usage from the API (issue to [estimate usage](https://github.com/jschuur/chatgpt-repl/issues/46)).
+Responses are streamed in by default. This can be disabled with the `.stream false` command or the `--stream false` CLI ption. Streamed responses currently [don't include](https://community.openai.com/t/openai-api-get-usage-tokens-in-response-when-set-stream-true/141866/2) token usage from the API and not included in usage tracking (issue to [estimate usage](https://github.com/jschuur/chatgpt-repl/issues/46)).
 
 Cancel a request in progress with Ctrl-C at any time, even when streaming.
 
 ### What about GPT-4?
 
-GPT-4 was [announced](https://openai.com/product/gpt-4) on March 14th, 2023 and API support for it started out with a waitlist. If it's available to you, it should work if you provide an [alternate model name](https://platform.openai.com/docs/models/gpt-4) via `--model gpt-4` (or the `.model gpt-4` command), since the Chat Completion API hasn't changed.
+GPT-4 was [announced](https://openai.com/product/gpt-4) on March 14th, 2023 and API support for it started out with a waitlist. If it's available to you, provide an [alternate model name](https://platform.openai.com/docs/models/gpt-4) via `--model gpt-4` (or the `.model gpt-4` command).
 
-Note however that GPT-4's pricing appears to be [significantly higher](https://chatgpt4.ai/gpt-4-api-pricing/) than GPT-3's. The current API usage costs shown by this tool is based on GPT-3's pricing ([for now](https://github.com/jschuur/chatgpt-repl/issues/19)).
+Note however that GPT-4's pricing appears to be [significantly higher](https://chatgpt4.ai/gpt-4-api-pricing/) than GPT-3's. The current API usage costs shown by this tool is based on GPT-3's pricing (issue for [model specific pricing](https://github.com/jschuur/chatgpt-repl/issues/19)).
 
 ### Command line options:
 
