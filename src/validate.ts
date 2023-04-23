@@ -57,14 +57,14 @@ export const zodModel = () =>
   z.string().refine((model) => {
     if (UNSUPPORTED_MODELS.includes(model))
       throw new Error(
-        `'${model}' is not supported by the OpenAI Chat Completions API. See the list at https://platform.openai.com/docs/models/overview.`
+        `'${model}' is not supported by the OpenAI Chat Completions API. Run '.models' command for the supported list.`
       );
 
     if (!KNOWN_MODELS.includes(model))
       console.log(
         `${pc.yellow(
           'Warning'
-        )}: '${model}' is not a know model for the OpenAI Chat Completions API. Use at your own risk. See the list at https://platform.openai.com/docs/models/overview.`
+        )}: '${model}' is not a know model for the OpenAI Chat Completions API. Use at your own risk or run '.models' command for the supported list.`
       );
 
     return true;

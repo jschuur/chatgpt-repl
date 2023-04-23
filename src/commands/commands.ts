@@ -5,6 +5,7 @@ import { packageJson, resetSettings, updateSetting } from '../settings.js';
 import copyCmd from './copyCmd.js';
 import exitCmd from './exitCmd.js';
 import helpCmd from './helpCmd.js';
+import modelsCmd from './modelsCmd.js';
 import retryCmd from './retryCmd.js';
 import settingsCmd from './settingsCmd.js';
 import usageCmd from './usageCmd.js';
@@ -40,6 +41,7 @@ export const commandList: CommandList = {
   settings: ['Show current settings', settingsCmd],
   usage: ['Show usage for current API key', usageCmd],
   model: ['Show/update model', (value: string) => updateSetting('model', value.trim())],
+  models: ['Show supported ChatGPT models', modelsCmd],
   temperature: [
     'Show/update temperature',
     (value: string) => updateSetting('temperature', value.trim()),

@@ -49,6 +49,8 @@ Cancel a request in progress with Ctrl-C at any time, even when streaming.
 
 GPT-4 was [announced](https://openai.com/product/gpt-4) on March 14th, 2023 and API support for it started out with a waitlist. If it's available to you, provide an [alternate model name](https://platform.openai.com/docs/models/gpt-4) via `--model gpt-4` (or the `.model gpt-4` command).
 
+The `.models` command will show you the supported models (issue to [use API for latest models list](https://github.com/jschuur/chatgpt-repl/issues/21)).
+
 Note however that GPT-4's pricing appears to be [significantly higher](https://chatgpt4.ai/gpt-4-api-pricing/) than GPT-3's. The current API usage costs shown by this tool is based on GPT-3's pricing (issue for [model specific pricing](https://github.com/jschuur/chatgpt-repl/issues/19)).
 
 ### Command line options:
@@ -86,9 +88,10 @@ Enhancements to conversation tracking are [planned](https://github.com/jschuur/c
 
 Instead of entering a prompt, you can also use a number of commands to modify settings or perform other actions. Use `.help` for the full list:
 
-- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting, or show it without a value
 - `.settings` shows all the current settings
 - `.reset` resets one or all settings to when you launched the current session
+- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting, or show it without a value
+- `.models` shows the list of supported models
 - `.retry` reruns the last prompt with the latest settings
 - `.last` shows the last response again without running it through ChatGPT again (applies new word wrap/clipboard settings)
 - `.clear` clears the [conversation history](#controlling-conversation-context)
