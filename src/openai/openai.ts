@@ -19,7 +19,7 @@ import {
   spinnerOptions,
 } from './response.js';
 
-let openai: OpenAIApi;
+export let openai: OpenAIApi;
 
 type ChatGPTResult = {
   response?: any;
@@ -33,7 +33,6 @@ export let apiKey = '';
 
 function initOpenAI(key: string) {
   apiKey = key;
-  // TODO move conf to settings?
   const configuration = new Configuration({ apiKey });
 
   openai = new OpenAIApi(configuration);
@@ -69,7 +68,7 @@ async function validateApiKey(key: string) {
 }
 
 export async function apiKeyCheck() {
-  let key = String(conf.get('apiKey', settings.apiKey));
+  let key = conf.get('apiKey', settings.apiKey || '');
 
   // validate keys not previously used/saved (options override saved key)
   if (!key) {

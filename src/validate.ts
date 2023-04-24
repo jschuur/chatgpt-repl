@@ -1,33 +1,7 @@
 import { boolean, isBooleanable } from 'boolean';
 import pc from 'picocolors';
 import { z } from 'zod';
-
-export const KNOWN_MODELS = [
-  'gpt-3.5-turbo',
-  'gpt-3.5-turbo-0301',
-  'gpt-4',
-  'gpt-4-0314',
-  'gpt-4-32k',
-  'gpt-4-32k-0314',
-];
-export const UNSUPPORTED_MODELS = [
-  'text-davinci-003',
-  'text-davinci-002',
-  'text-davinci-edit-001',
-  'code-davinci-edit-001',
-  'whisper-1',
-  'text-curie-001',
-  'text-babbage-001',
-  'text-ada-001',
-  'davinci',
-  'curie',
-  'babbage',
-  'ada',
-  'text-embedding-ada-002',
-  'text-search-ada-doc-001',
-  'text-moderation-stable',
-  'text-moderation-latest',
-];
+import { chatCompletionModels, otherOpenAIModels } from './openai/models.js';
 
 // zod helpers to enforce integer, floats and flexible boolean string value
 export const zodInt = () =>
@@ -55,16 +29,16 @@ export const zodBoolean = () =>
 
 export const zodModel = () =>
   z.string().refine((model) => {
-    if (UNSUPPORTED_MODELS.includes(model))
+    if (otherOpenAIModels.length && otherOpenAIModels.includes(model))
       throw new Error(
         `'${model}' is not supported by the OpenAI Chat Completions API. Run '.models' command for the supported list.`
       );
 
-    if (!KNOWN_MODELS.includes(model))
+    if (chatCompletionModels.length && !chatCompletionModels.includes(model))
       console.log(
         `${pc.yellow(
           'Warning'
-        )}: '${model}' is not a know model for the OpenAI Chat Completions API. Use at your own risk or run '.models' command for the supported list.`
+        )}: '${model}' is not a know model for the OpenAI Chat Completions API. Use at your own risk or run '.models update' to force an update of the supported list.`
       );
 
     return true;

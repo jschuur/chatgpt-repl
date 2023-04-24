@@ -9,12 +9,12 @@ import { z } from 'zod';
 
 import settingsCmd from './commands/settingsCmd.js';
 import { validationError } from './utils.js';
-import { KNOWN_MODELS, zodBoolean, zodFloat, zodInt, zodModel } from './validate.js';
+import { zodBoolean, zodFloat, zodInt, zodModel } from './validate.js';
 
 export const defaultSettings = {
   temperature: 1.0,
   maxTokens: 1024,
-  model: KNOWN_MODELS[0],
+  model: 'gpt-3.5-turbo',
   system: 'You are a helpful assistant',
   historyLength: 5,
   wordWrap: true,
@@ -44,6 +44,7 @@ export type Setting = keyof Settings;
 
 export const INDENT_PADDING_BUFFER = 2;
 export const DEFAULT_TOKEN_PRICE = 0.000002;
+export const MODEL_CACHE_TIME_MINUTES = 1000 * 60 * 60 * 24 * 3; // 3 days
 
 export const openAIPricePerToken: number =
   parseFloat(process.env.OPENAI_USD_PRICE_PER_TOKEN) || DEFAULT_TOKEN_PRICE;
@@ -51,7 +52,17 @@ export const openAIPricePerToken: number =
 const resolvePath = (filePath: string) =>
   path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), filePath);
 
-export const conf = new Conf({ projectName: 'chatgpt-repl' });
+export type ConfData = {
+  apiKey: string;
+  totalUsage: { [key: string]: number };
+  models: {
+    chatCompletionModels: string[];
+    otherOpenAIModels: string[];
+    lastUpdated: number;
+  };
+};
+
+export const conf = new Conf<ConfData>({ projectName: 'chatgpt-repl' });
 
 export const packageJson = jsonfile.readFileSync(resolvePath('../package.json'));
 

@@ -12,12 +12,15 @@ import usageCmd from './usageCmd.js';
 
 export const COMMAND_PREFIX = '.';
 
-type CommandDefinition = [description: string, commandFunction: (args: string) => string | void];
+type CommandDefinition = [
+  description: string,
+  commandFunction: (args: string) => string | void | Promise<void>
+];
 interface CommandList {
   [key: string]: CommandDefinition;
 }
 
-export function runCommand(cmd: string): string | void {
+export async function runCommand(cmd: string): Promise<string | void> {
   const [command, ...args] = cmd.slice(1).split(' ');
 
   if (!commandList[command])
@@ -27,11 +30,27 @@ export function runCommand(cmd: string): string | void {
   else {
     const cmdFunc = commandList[command][1];
 
-    if (cmdFunc) return cmdFunc(args.join(' '));
+    if (cmdFunc) return await cmdFunc(args.join(' '));
     else console.error(`command: ${COMMAND_PREFIX}${command} is missing a function to execute.`);
   }
 
   return '';
+}
+
+function completeOptions(partial: string, options: string[]) {
+  const matches = options.filter((c) => c.startsWith(partial));
+
+  return [matches.length ? matches.map((m) => `${m} `) : options, partial];
+}
+
+export function completeCommand(line: string) {
+  const input = line.trim();
+  const cmd = input.split(' ')?.[0];
+  const commands = Object.keys(commandList).map((c) => `${COMMAND_PREFIX}${c}`);
+
+  if (!cmd || !input.startsWith(COMMAND_PREFIX) || commands.includes(cmd)) return [[], input];
+
+  return completeOptions(cmd, commands);
 }
 
 export const commandList: CommandList = {
@@ -41,7 +60,7 @@ export const commandList: CommandList = {
   settings: ['Show current settings', settingsCmd],
   usage: ['Show usage for current API key', usageCmd],
   model: ['Show/update model', (value: string) => updateSetting('model', value.trim())],
-  models: ['Show supported ChatGPT models', modelsCmd],
+  models: ['Show/update supported ChatGPT models list', modelsCmd],
   temperature: [
     'Show/update temperature',
     (value: string) => updateSetting('temperature', value.trim()),
