@@ -23,7 +23,7 @@ export const defaultSettings = {
   clipboard: false,
   stream: true,
   history: true,
-  apiKey: process.env['OPENAI_APIKEY'] || '',
+  apiKey: process.env['CHATGPTREPL_APIKEY'] || '',
   historyFile: '~/.chatgpt-repl.history',
 };
 
@@ -54,7 +54,7 @@ export const DEFAULT_TOKEN_PRICE = 0.000002;
 export const MODEL_CACHE_TIME_MINUTES = 1000 * 60 * 60 * 24 * 3; // 3 days
 
 export const openAIPricePerToken: number =
-  parseFloat(process.env.OPENAI_USD_PRICE_PER_TOKEN) || DEFAULT_TOKEN_PRICE;
+  parseFloat(process.env.CHATGPTREPL_USD_PRICE_PER_TOKEN) || DEFAULT_TOKEN_PRICE;
 
 const resolvePath = (filePath: string) =>
   path.resolve(url.fileURLToPath(new URL('.', import.meta.url)), filePath);
@@ -77,7 +77,7 @@ export const parseSetting = (setting: Setting, value: string): SettingsTypes =>
   settingsSchema.shape[setting].parse(value);
 
 const defaultSetting = (setting: Setting): string | undefined =>
-  process.env[`OPENAI_${setting.toUpperCase()}`] || defaultSettings[setting]?.toString();
+  process.env[`CHATGPTREPL_${setting.toUpperCase()}`] || defaultSettings[setting]?.toString();
 
 const isSetting = (field: string): field is Setting => settingSchema.safeParse(field)?.success;
 

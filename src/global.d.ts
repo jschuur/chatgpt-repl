@@ -6,15 +6,15 @@ declare module 'streamed-chatgpt-api';
 declare namespace NodeJS {
   export interface ProcessEnv {
     NODE_ENV: string;
-    OPENAI_USD_PRICE_PER_TOKEN: string;
-    OPENAI_APIKEY: string;
-    OPENAI_MAXTOKENS: string;
-    OPENAI_CONVERSATIONLENGTH: string;
-    OPENAI_HISTORY: string;
-    OPENAI_HISTORYSIZE: string;
-    OPENAI_HISTORYFILE: string;
-    OPENAI_TEMPERATURE: string;
-    OPENAI_MODEL: string;
-    OPENAI_SYSTEM: string;
+    CHATGPTREPL_USD_PRICE_PER_TOKEN: string;
+    CHATGPTREPL_APIKEY: string;
+    CHATGPTREPL_MAXTOKENS: string;
+    CHATGPTREPL_CONVERSATIONLENGTH: string;
+    CHATGPTREPL_HISTORY: string;
+    CHATGPTREPL_HISTORYSIZE: string;
+    CHATGPTREPL_HISTORYFILE: string;
+    CHATGPTREPL_TEMPERATURE: string;
+    CHATGPTREPL_MODEL: string;
+    CHATGPTREPL_SYSTEM: string;
   }
 }

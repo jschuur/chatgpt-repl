@@ -76,7 +76,7 @@ export async function apiKeyCheck() {
     await validateApiKey(key);
 
     // don't overwrite a saved key when commander set settings.apiKey via.env()
-    if (!process.env.OPENAI_APIKEY) conf.set('apiKey', key);
+    if (!process.env.CHATGPTREPL_APIKEY) conf.set('apiKey', key);
   }
 
   if (!openai) initOpenAI(key);
