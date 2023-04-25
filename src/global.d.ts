@@ -9,7 +9,10 @@ declare namespace NodeJS {
     OPENAI_USD_PRICE_PER_TOKEN: string;
     OPENAI_APIKEY: string;
     OPENAI_MAXTOKENS: string;
-    OPENAI_HISTORYLENGTH: string;
+    OPENAI_CONVERSATIONLENGTH: string;
+    OPENAI_HISTORY: string;
+    OPENAI_HISTORYSIZE: string;
+    OPENAI_HISTORYFILE: string;
     OPENAI_TEMPERATURE: string;
     OPENAI_MODEL: string;
     OPENAI_SYSTEM: string;

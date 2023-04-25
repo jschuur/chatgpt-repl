@@ -1,7 +1,11 @@
-import pc from 'picocolors';
+import os from 'os';
 import readline from 'readline';
+
+import pc from 'picocolors';
 import wrapText from 'wrap-text';
 import { z } from 'zod';
+
+const homeDir = os.homedir();
 
 export function clearLine() {
   readline.clearLine(process.stdout, 0);
@@ -44,3 +48,7 @@ export function lengthWithoutColor(str: string) {
 
   return str.replace(colorPattern, '').length;
 }
+
+// via https://github.com/sindresorhus/untildify
+export const untildify = (filePath: string) =>
+  homeDir ? filePath.replace(/^~(?=$|\/|\\)/, homeDir) : filePath;

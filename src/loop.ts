@@ -1,23 +1,45 @@
+import fs from 'fs';
 import readline from 'readline';
 
 import pc from 'picocolors';
+import readLastLines from 'read-last-lines';
 
 import { COMMAND_PREFIX, completeCommand, runCommand } from './commands/commands.js';
 import exitCmd from './commands/exitCmd.js';
 import { askChatGPT } from './openai/openai.js';
+import { settings } from './settings.js';
 
 const promptText: string = pc.green('You: ');
 
 export let rl: readline.Interface;
 
-function initReadline() {
+async function initReadline() {
+  const historyStream = fs.createWriteStream(settings.historyFile, { flags: 'a' });
+
+  const history: string[] = fs.existsSync(settings.historyFile)
+    ? ((await readLastLines.read(settings.historyFile, settings.historySize)) as string)
+        .split('\n')
+        .reverse()
+        .filter(Boolean)
+        .map((line) => line.split(' ', 2)[1])
+    : [];
+
   rl = readline
     .createInterface({
       input: process.stdin,
       output: process.stdout,
+      history,
+      historySize: settings.historySize,
       completer: completeCommand,
     })
-    .on('close', exitCmd);
+    .on('history', (history: string[]) => {
+      if (settings.history && !history[0]?.startsWith(' '))
+        historyStream.write(`${new Date().toISOString()} ${history[0]}\n`);
+    })
+    .on('close', () => {
+      historyStream.end();
+      exitCmd;
+    });
 }
 
 async function inputPrompt(): Promise<string> {
@@ -27,7 +49,7 @@ async function inputPrompt(): Promise<string> {
 }
 
 export async function chatLoop() {
-  initReadline();
+  await initReadline();
 
   // eslint-disable-next-line no-constant-condition
   while (true) {

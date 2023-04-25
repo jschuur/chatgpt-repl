@@ -10,7 +10,7 @@ type Conversation = {
 export let conversation: Conversation = [{ role: 'system', content: settings.system }];
 
 export function updateConversation({ role, content }: { role: ConversationRole; content: string }) {
-  const { historyLength } = settings;
+  const { conversationLength } = settings;
 
   if (role === 'system') {
     updateSetting('system', content);
@@ -20,9 +20,9 @@ export function updateConversation({ role, content }: { role: ConversationRole; 
 
     if (role === 'assistant')
       conversation =
-        historyLength <= 0
+        conversationLength <= 0
           ? [conversation[0]]
-          : [conversation[0], ...conversation.slice(1).slice(-(2 * historyLength))];
+          : [conversation[0], ...conversation.slice(1).slice(-(2 * conversationLength))];
   }
 }
 

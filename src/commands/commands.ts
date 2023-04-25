@@ -69,10 +69,11 @@ export const commandList: CommandList = {
     'Show/update max tokens per prompt',
     (value: string) => updateSetting('maxTokens', value.trim()),
   ],
-  historylength: [
+  conversationlength: [
     'Show/update history length',
-    (value: string) => updateSetting('historyLength', value.trim()),
+    (value: string) => updateSetting('conversationLength', value.trim()),
   ],
+
   system: [
     'Show/update system text',
     (value: string) => updateConversation({ role: 'system', content: value.trim() }),
@@ -92,6 +93,10 @@ export const commandList: CommandList = {
   stream: [
     'stream responses as they are received',
     (value: string) => updateSetting('stream', value.trim()),
+  ],
+  history: [
+    'skip writing to history file',
+    (value: string) => updateSetting('history', value.trim()),
   ],
   last: ['Show the last response again', showLastResponse],
   exit: ['Exit chatgpt-repl', exitCmd],

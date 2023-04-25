@@ -12,6 +12,7 @@ An experiment inspired by [two](https://twitter.com/sandbags/status/163193327348
 - Controllable [conversation context](#controlling-conversation-context)
 - Clipboard copying
 - Local API usage tracking
+- Access input history from previous sessions
 
 See the [current roadmap](https://github.com/users/jschuur/projects/3) for plans and ideas, including issues with a [help wanted](https://github.com/jschuur/chatgpt-repl/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label. Feel free to [open an issue](https://github.com/jschuur/chatgpt-repl/issues/new) if you encounter any bugs or have suggestions.
 
@@ -45,6 +46,8 @@ Responses are streamed in by default. This can be disabled with the `.stream fal
 
 Cancel a request in progress with Ctrl-C at any time, even when streaming.
 
+REPL input is saved into a history file (`~/.chatgpt-repl-history` or based on`OPENAI_HISTORYFILE` env). This can be disabled with the `--history false` CLI option. The last 100 (or `OPENAI_HISTORYSIZE`) history entries are loaded on startup.
+
 ### Supported models
 
 Currently, the default model is `gpt-3.5-turbo`. Use the `.models` command to see the list of supported models.
@@ -64,7 +67,9 @@ Note however that GPT-4's pricing appears to be [significantly higher](https://c
 
 - `-c, --clipboard <boolean>` Enable/disable copying the latest response to the clipboard as it is shown (default: 'false' or `OPENAI_CLIPBOARD` env)
 - `-k, --api-key <key>` Set (and save) OpenAI API key (`OPENAI_APIKEY` env)
-- `-l, --history-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_HISTORYLENGTH` env)
+- `-l, --conversation-length` Set [conversation history length](#controlling-conversation-context) (default: 3 or `OPENAI_CONVERSATIONLENGTH` env)
+- `--history-size` Set history size (default: 100 or`OPENAI_HISTORYSIZE` env)
+- `--history-file` History file location (default: `~/.chatgpt-repl.history` or`OPENAI_HISTORYFILE` env)
 - `-m, --model` <model> Set the OpenAI [model](https://platform.openai.com/docs/api-reference/chat/create#chat/create-model) (default: gpt-3.5-turbo or `OPENAI_MODEL` env)
 - `-t, --temperature` <num> Set the [temperature](https://platform.openai.com/docs/quickstart/adjust-your-settings) for more 'random' responses (default: 1 or `OPENAI_TEMPERATURE` env)
 - `-s, --system` <text> Set the [system](https://platform.openai.com/docs/guides/chat/introduction) to set the tone of the response (default: 'You are a helpful assistant' or `OPENAI_SYSTEM` env)
@@ -80,9 +85,9 @@ OpenAI API usage is paid after a free trial, but [extremely cheap](https://opena
 
 ### Controlling conversation context
 
-By default, the last 3 prompts/responses in a session are used in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases costs by using more API tokens.
+By default, the last 5 prompts/responses in a session are used in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases costs by using more API tokens.
 
-The `-l <num>` option (or `OPENAI_HISTORYLENGTH` environment variable or `.historylength` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
+The `-l <num>` option (or `OPENAI_CONVERSATIONLENGTH` environment variable or `.conversationlength` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
 
 Thus with a history length of zero, you couldn't ask 'What is the Sun?' and later 'How far away from the Earth is it?', since it would have no frame of reference for 'it'.
 
@@ -94,7 +99,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 
 - `.settings` shows all the current settings
 - `.reset` resets one or all settings to when you launched the current session
-- `.model`, `.temperature`, `.maxtokens`, `.historylength` or `.system` followed by a value will change a setting, or show it without a value
+- `.model`, `.temperature`, `.maxtokens`, `.conversationlength` or `.system` followed by a value will change a setting, or show it without a value
 - `.models [update]` shows/force updates the list of supported models
 - `.retry` reruns the last prompt with the latest settings
 - `.last` shows the last response again without running it through ChatGPT again (applies new word wrap/clipboard settings)
@@ -102,6 +107,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 - `.copy` copies the last response to a prompt to your system clipboard
 - `.clipboard` enabled/disabled clipboard copying for every response (off by default)
 - `.wordwrap` enables/disables word wrapping for the response output (on by default)
+- `.history` enables/disables input logging to history file (on by default)
 - `.stream` enables/disables streamed responses (on by default)
 - `.usage` shows current and total API usage
 - `.exit` ends the current session

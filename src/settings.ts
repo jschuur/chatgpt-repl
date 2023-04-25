@@ -5,10 +5,11 @@ import { Command } from 'commander';
 import Conf from 'conf';
 import jsonfile from 'jsonfile';
 import pc from 'picocolors';
+
 import { z } from 'zod';
 
 import settingsCmd from './commands/settingsCmd.js';
-import { validationError } from './utils.js';
+import { untildify, validationError } from './utils.js';
 import { zodBoolean, zodFloat, zodInt, zodModel } from './validate.js';
 
 export const defaultSettings = {
@@ -16,11 +17,14 @@ export const defaultSettings = {
   maxTokens: 1024,
   model: 'gpt-3.5-turbo',
   system: 'You are a helpful assistant',
-  historyLength: 5,
+  conversationLength: 5,
+  historySize: 100,
   wordWrap: true,
   clipboard: false,
   stream: true,
+  history: true,
   apiKey: process.env['OPENAI_APIKEY'] || '',
+  historyFile: '~/.chatgpt-repl.history',
 };
 
 const settingsSchema = z.object({
@@ -29,10 +33,13 @@ const settingsSchema = z.object({
   model: zodModel(),
   apiKey: z.string().optional(),
   system: z.string(),
-  historyLength: zodInt(),
+  conversationLength: zodInt(),
+  historySize: zodInt(),
   wordWrap: zodBoolean(),
   clipboard: zodBoolean(),
   stream: zodBoolean(),
+  history: zodBoolean(),
+  historyFile: z.string(),
 });
 
 export const settingSchema = settingsSchema.keyof();
@@ -77,7 +84,10 @@ const isSetting = (field: string): field is Setting => settingSchema.safeParse(f
 function setSetting(setting: Setting, value: SettingsTypes) {
   // all this to keep typescript happy. there has to be a better way?
   // https://stackoverflow.com/questions/75809343/type-string-number-is-not-assignable-to-type-never-when-dynamically-settin/75809489#75809489
-  if ((setting === 'maxTokens' || setting === 'historyLength') && typeof value === 'number')
+  if (
+    (setting === 'maxTokens' || setting === 'conversationLength' || setting === 'historySize') &&
+    typeof value === 'number'
+  )
     settings[setting] = value;
   if (
     (setting === 'model' || setting === 'system' || setting === 'apiKey') &&
@@ -85,7 +95,10 @@ function setSetting(setting: Setting, value: SettingsTypes) {
   )
     settings[setting] = value;
   if (
-    (setting === 'wordWrap' || setting === 'clipboard' || setting === 'stream') &&
+    (setting === 'wordWrap' ||
+      setting === 'clipboard' ||
+      setting === 'stream' ||
+      setting === 'history') &&
     typeof value === 'boolean'
   )
     settings[setting] = value;
@@ -136,16 +149,27 @@ program
   )
   .option('-k, --apiKey <string>', 'Set (and save) OpenAI API key')
   .option(
-    '-l, --history-length <integer>',
+    '-l, --conversation-length <integer>',
     'Set conversation history length',
-    defaultSetting('historyLength')
+    defaultSetting('conversationLength')
   )
+  .option('--history-size <integer>', 'Set history size', defaultSetting('historySize'))
   .option('-m, --model <string>', 'Set OpenAI model', defaultSetting('model'))
   .option('-t, --temperature <float>', 'Set temperature', defaultSetting('temperature'))
   .option('-s, --system <string>', 'Set system prompt', defaultSetting('system'))
   .option('-w, --word-wrap <boolean>', 'Enable/disable word wrap', defaultSetting('wordWrap'))
   .option('-x, --max-tokens <integer>', 'Max tokens per request', defaultSetting('maxTokens'))
-  .option('-r, --stream <boolean>', 'Enable/disabled streamed response', defaultSetting('stream'));
+  .option('-r, --stream <boolean>', 'Enable/disabled streamed response', defaultSetting('stream'))
+  .option(
+    '-h, --history <boolean>',
+    'Enable/disabled logging to history file',
+    defaultSetting('history')
+  )
+  .option(
+    '--history-file <path>',
+    'History file location',
+    untildify(defaultSetting('historyFile') || '')
+  );
 
 export let settings: Settings = settingsSchema.parse(program.parse().opts());
 const initialSettings = { ...settings };
