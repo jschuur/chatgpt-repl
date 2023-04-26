@@ -1,6 +1,7 @@
 import { clearConversation, updateConversation } from '../openai/conversation.js';
 import { showLastResponse } from '../openai/response.js';
 import { packageJson, resetSettings, updateSetting } from '../settings.js';
+import conversationCmd from './conversationCmd.js';
 
 import copyCmd from './copyCmd.js';
 import exitCmd from './exitCmd.js';
@@ -14,7 +15,8 @@ export const COMMAND_PREFIX = '.';
 
 type CommandDefinition = [
   description: string,
-  commandFunction: (args: string) => string | void | Promise<void>
+  commandFunction: (args: string) => string | void | Promise<void>,
+  syntax?: string
 ];
 interface CommandList {
   [key: string]: CommandDefinition;
@@ -60,7 +62,7 @@ export const commandList: CommandList = {
   settings: ['Show current settings', settingsCmd],
   usage: ['Show usage for current API key', usageCmd],
   model: ['Show/update model', (value: string) => updateSetting('model', value.trim())],
-  models: ['Show/update supported ChatGPT models list', modelsCmd],
+  models: ['Show/update supported ChatGPT models list', modelsCmd, 'models [update]'],
   temperature: [
     'Show/update temperature',
     (value: string) => updateSetting('temperature', value.trim()),
@@ -69,10 +71,7 @@ export const commandList: CommandList = {
     'Show/update max tokens per prompt',
     (value: string) => updateSetting('maxTokens', value.trim()),
   ],
-  conversationlength: [
-    'Show/update history length',
-    (value: string) => updateSetting('conversationLength', value.trim()),
-  ],
+  conversation: ['Show/update conversation length', conversationCmd, 'conversation [length]'],
 
   system: [
     'Show/update system text',

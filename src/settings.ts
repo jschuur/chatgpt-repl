@@ -109,7 +109,7 @@ function setSetting(setting: Setting, value: SettingsTypes) {
 export function updateSetting(setting: Setting, value: string) {
   if (!value || value.length === 0) {
     // display the current value
-    console.log(`${setting.padEnd(indentPadding + 3)} ${pc.dim(String(settings[setting]))}`);
+    console.log(`${setting.toLowerCase()} is ${pc.dim(String(settings[setting]))}`);
   } else {
     try {
       const parsedValue = parseSetting(setting, value);
@@ -173,6 +173,3 @@ program
 
 export let settings: Settings = settingsSchema.parse(program.parse().opts());
 const initialSettings = { ...settings };
-
-export const indentPadding =
-  Math.max(...Object.keys(settings).map((k) => k.length)) + INDENT_PADDING_BUFFER;

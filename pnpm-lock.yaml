@@ -46,6 +46,9 @@ dependencies:
   read-last-lines:
     specifier: ^1.8.0
     version: 1.8.0
+  shell-quote:
+    specifier: ^1.8.1
+    version: 1.8.1
   streamed-chatgpt-api:
     specifier: github:shrft/streamed-chatgpt-api
     version: github.com/shrft/streamed-chatgpt-api/60bbdc16e68163508c4ba42aa809a59b449ab5fe
@@ -78,6 +81,9 @@ devDependencies:
   '@types/pluralize':
     specifier: ^0.0.29
     version: 0.0.29
+  '@types/shell-quote':
+    specifier: ^1.7.1
+    version: 1.7.1
   '@types/update-notifier':
     specifier: ^6.0.2
     version: 6.0.2
@@ -481,6 +487,10 @@ packages:
 
   /@types/semver@7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
+    dev: true
+
+  /@types/shell-quote@1.7.1:
+    resolution: {integrity: sha512-SWZ2Nom1pkyXCDohRSrkSKvDh8QOG9RfAsrt5/NsPQC4UQJ55eG0qClA40I+Gkez4KTQ0uDUT8ELRXThf3J5jw==}
     dev: true
 
   /@types/update-notifier@6.0.2:
@@ -2102,6 +2112,10 @@ packages:
   /shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  /shell-quote@1.8.1:
+    resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
+    dev: false
 
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}

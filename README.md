@@ -87,7 +87,7 @@ OpenAI API usage is paid after a free trial, but [extremely cheap](https://opena
 
 By default, the last 5 prompts/responses in a session are used in addition to a new prompt, to provide ChatGPT with additional context. This allows for follow-up prompts that reference a previous response, but also increases costs by using more API tokens.
 
-The `-l <num>` option (or `CHATGPTREPL_CONVERSATIONLENGTH` environment variable or `.conversationlength` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
+The `-l <num>` option (or `CHATGPTREPL_CONVERSATIONLENGTH` environment variable or `.conversation length` command) can be used to change this conversation length, by indicating how much of an earlier conversation to reuse. So `-l 0` would not send any previous conversation context back and `-l 1` would only use the most recent prompt/response for context.
 
 Thus with a history length of zero, you couldn't ask 'What is the Sun?' and later 'How far away from the Earth is it?', since it would have no frame of reference for 'it'.
 
@@ -99,7 +99,7 @@ Instead of entering a prompt, you can also use a number of commands to modify se
 
 - `.settings` shows all the current settings
 - `.reset` resets one or all settings to when you launched the current session
-- `.model`, `.temperature`, `.maxtokens`, `.conversationlength` or `.system` followed by a value will change a setting, or show it without a value
+- `.model`, `.temperature`, `.maxtokens`, `.conversation length` or `.system` followed by a value will change a setting, or show it without a value
 - `.models [update]` shows/force updates the list of supported models
 - `.retry` reruns the last prompt with the latest settings
 - `.last` shows the last response again without running it through ChatGPT again (applies new word wrap/clipboard settings)
